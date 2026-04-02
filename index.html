@@ -671,8 +671,14 @@ footer{
       <p class="section-sub">Every project below solved a specific business challenge with automation, AI, or data. These are live, functioning systems — not mockups.</p>
     </div>
 
+    <div class="project-tabs reveal">
+      <button class="tab-btn active" onclick="filterProjects('all',this)">All Projects</button>
+      <button class="tab-btn" onclick="filterProjects('ai',this)">AI Automation</button>
+      <button class="tab-btn" onclick="filterProjects('data',this)">Data &amp; BI</button>
+    </div>
+
     <!-- Project 1 -->
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-category="ai">
       <div class="project-body">
         <div>
           <div class="project-meta">
@@ -711,13 +717,13 @@ footer{
             <div class="flow-arrow">↓</div>
             <div class="flow-node">Vapi Voice Agent + CRM</div>
           </div>
-          <div class="project-visual-hint">Add your workflow screenshot here</div>
+          <div class="project-visual-hint">📸 Replace with your n8n screenshot</div>
         </div>
       </div>
     </div>
 
     <!-- Project 2 -->
-    <div class="project-card reverse reveal">
+    <div class="project-card reverse reveal" data-category="ai">
       <div class="project-visual">
         <div class="project-visual-inner">
           <div class="flow-diagram">
@@ -729,7 +735,7 @@ footer{
             <div class="flow-arrow">↓</div>
             <div class="flow-node">Smart Reminders + Outreach Drafts</div>
           </div>
-          <div class="project-visual-hint">Add WIZZY architecture screenshot here</div>
+          <div class="project-visual-hint">📸 Replace with your WIZZY diagram</div>
         </div>
       </div>
       <div class="project-body">
@@ -762,7 +768,7 @@ footer{
     </div>
 
     <!-- Project 3 -->
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-category="ai">
       <div class="project-body">
         <div>
           <div class="project-meta">
@@ -801,13 +807,13 @@ footer{
             <div class="flow-arrow">↓ Scheduled</div>
             <div class="flow-node">Gmail → Stakeholder Delivery</div>
           </div>
-          <div class="project-visual-hint">Add your audit report screenshot here</div>
+          <div class="project-visual-hint">📸 Replace with your audit report screenshot</div>
         </div>
       </div>
     </div>
 
     <!-- Project 4 -->
-    <div class="project-card reverse reveal">
+    <div class="project-card reverse reveal" data-category="ai">
       <div class="project-visual">
         <div class="project-visual-inner">
           <div class="flow-diagram">
@@ -817,7 +823,7 @@ footer{
             <div class="flow-arrow">↓ Score ≥ 75</div>
             <div class="flow-node">HubSpot → Route + Draft Outreach</div>
           </div>
-          <div class="project-visual-hint">Add your HubSpot or n8n screenshot here</div>
+          <div class="project-visual-hint">📸 Replace with your lead scoring screenshot</div>
         </div>
       </div>
       <div class="project-body">
@@ -850,7 +856,7 @@ footer{
     </div>
 
     <!-- Project 5 — Data -->
-    <div class="project-card reveal">
+    <div class="project-card reveal" data-category="data">
       <div class="project-body">
         <div>
           <div class="project-meta">
@@ -882,7 +888,7 @@ footer{
         <div class="project-visual-inner">
           <div class="project-visual-icon">📊</div>
           <div class="project-visual-label">Power BI Executive Dashboard — Live KPI tracking</div>
-          <div class="project-visual-hint">Add your Power BI screenshot here</div>
+          <div class="project-visual-hint">📸 Replace with your Power BI dashboard</div>
         </div>
       </div>
     </div>
@@ -1006,8 +1012,8 @@ footer{
       <div class="reveal">
         <p style="color:var(--text2);font-size:.9375rem;line-height:1.75;margin-bottom:2rem">I'm open to freelance projects, consulting engagements, and longer-term automation partnerships — globally and remotely. If you have a workflow problem, reach out and let's figure out the best solution together.</p>
         <div class="contact-links">
-          <a href="mailto:solomonwisdom78@gmail.com" class="contact-link">
-            <span>✉</span><span>solomonwisdom78@gmail.com</span>
+          <a href="/cdn-cgi/l/email-protection#186b7774777577766f716b7c77752f20587f75797174367b7775" class="contact-link">
+            <span>✉</span><span><span class="__cf_email__" data-cfemail="e695898a898b8988918f9582898bd1dea6818b878f8ac885898b">[email&#160;protected]</span></span>
           </a>
           <a href="tel:+2348093096544" class="contact-link">
             <span>📞</span><span>+234 809 309 6544</span>
@@ -1020,7 +1026,7 @@ footer{
           </div>
         </div>
       </div>
-      <form class="contact-form reveal" onsubmit="handleSubmit(event)">
+      <form class="contact-form reveal" id="contactForm" onsubmit="handleSubmit(event)">
         <div class="form-row">
           <div class="form-group">
             <label for="fname">First Name</label>
@@ -1072,21 +1078,69 @@ function closeMobile(){mobileMenu.classList.remove('open')}
 
 // Scroll reveal
 const reveals=document.querySelectorAll('.reveal');
-const observer=new IntersectionObserver((entries)=>{
+const revealObserver=new IntersectionObserver((entries)=>{
   entries.forEach(e=>{
-    if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}
+    if(e.isIntersecting){e.target.classList.add('visible');revealObserver.unobserve(e.target)}
   });
-},{threshold:0.1,rootMargin:'0px 0px -40px 0px'});
-reveals.forEach(r=>observer.observe(r));
+},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+reveals.forEach(r=>revealObserver.observe(r));
 
-// Form
-function handleSubmit(e){
+// Project tab filter
+function filterProjects(cat, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.project-card').forEach(card=>{
+    if(cat==='all'||card.dataset.category===cat){
+      card.style.display='';
+      card.style.opacity='1';
+    } else {
+      card.style.display='none';
+    }
+  });
+}
+
+// Contact form — shows success state (connect to Formspree for real submissions)
+async function handleSubmit(e){
   e.preventDefault();
-  const btn=e.target.querySelector('button[type=submit]');
-  btn.textContent='Message Sent ✓';
-  btn.style.background='var(--green)';
-  btn.style.color='#071a0f';
-  setTimeout(()=>{btn.textContent='Send Message →';btn.style.background='';btn.style.color='';e.target.reset()},3000);
+  const form=e.target;
+  const btn=form.querySelector('button[type=submit]');
+  const orig=btn.textContent;
+  btn.textContent='Sending...';
+  btn.disabled=true;
+
+  // ── To receive real emails, replace the action URL below with your Formspree endpoint ──
+  // 1. Go to formspree.io → New Form → copy your endpoint URL
+  // 2. Replace 'https://formspree.io/f/YOUR_FORM_ID' with your actual URL
+  const FORMSPREE_URL='https://formspree.io/f/YOUR_FORM_ID';
+
+  if(FORMSPREE_URL.includes('YOUR_FORM_ID')){
+    // Demo mode — no real submission
+    await new Promise(r=>setTimeout(r,800));
+    btn.textContent='Message Sent ✓';
+    btn.style.background='var(--green)';
+    btn.style.color='#071a0f';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.disabled=false;form.reset()},3000);
+    return;
+  }
+
+  try{
+    const res=await fetch(FORMSPREE_URL,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+    if(res.ok){
+      btn.textContent='Message Sent ✓';
+      btn.style.background='var(--green)';
+      btn.style.color='#071a0f';
+      form.reset();
+      setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.disabled=false},3500);
+    } else {
+      btn.textContent='Error — try email instead';
+      btn.style.background='#ff6b6b';
+      setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000);
+    }
+  } catch(err){
+    btn.textContent='Error — try email instead';
+    btn.style.background='#ff6b6b';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000);
+  }
 }
 
 // Active nav on scroll
@@ -1094,11 +1148,13 @@ const sections=document.querySelectorAll('section[id]');
 const navLinks=document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll',()=>{
   let current='';
-  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)current=s.getAttribute('id')});
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-140)current=s.getAttribute('id')});
   navLinks.forEach(a=>{
-    a.style.color=a.getAttribute('href')==='#'+current?'var(--text)':'';
+    const href=a.getAttribute('href');
+    a.style.color=(href==='#'+current)?'var(--text)':'';
   });
 },{passive:true});
 </script>
+
 </body>
 </html>
