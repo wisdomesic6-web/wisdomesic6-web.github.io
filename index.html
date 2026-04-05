@@ -202,22 +202,28 @@ section{padding:6rem 2.5rem}
 /* Project visual panel */
 .project-visual{
   background:var(--surface);border-left:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:stretch;justify-content:stretch;
-  position:relative;overflow:hidden;min-height:380px;
+  position:relative;overflow:hidden;min-height:420px;
 }
 .project-card.reverse .project-visual{border-left:none;border-right:1px solid var(--border)}
-.project-visual img{width:100%;height:100%;object-fit:cover;opacity:.85;transition:opacity var(--transition),transform var(--transition);display:block}
-.project-card:hover .project-visual img{opacity:1;transform:scale(1.02)}
+.project-visual img{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  object-fit:cover;object-position:top center;
+  opacity:.85;
+  transition:opacity var(--transition),transform var(--transition);
+  display:block;
+}
+.project-card:hover .project-visual img{opacity:1;transform:scale(1.03)}
 .project-visual-overlay{
-  position:absolute;inset:0;
-  background:linear-gradient(to top,rgba(15,17,23,.7) 0%,transparent 50%);
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(to top,rgba(15,17,23,.8) 0%,rgba(15,17,23,.1) 55%,transparent 100%);
   pointer-events:none;
 }
 .project-visual-badge{
-  position:absolute;bottom:1rem;left:1rem;right:1rem;
-  background:rgba(15,17,23,.85);border:1px solid var(--border2);
+  position:absolute;bottom:1rem;left:1rem;right:1rem;z-index:2;
+  background:rgba(15,17,23,.9);border:1px solid var(--border2);
   border-radius:var(--radius);padding:.75rem 1rem;
-  backdrop-filter:blur(8px);
+  backdrop-filter:blur(12px);
   display:flex;align-items:center;gap:.75rem;
 }
 .pvb-metric{text-align:center;flex:1}
@@ -305,8 +311,8 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
   .why-grid{grid-template-columns:repeat(2,1fr)}
   .project-card,.project-card.reverse{grid-template-columns:1fr;display:flex;flex-direction:column}
   .project-card.reverse{flex-direction:column}
-  .project-visual{border-left:none;border-right:none;border-top:1px solid var(--border);min-height:260px;order:-1}
-  .project-card.reverse .project-visual{border-left:none;border-right:none;order:-1}
+  .project-visual{border-left:none;border-right:none;border-top:1px solid var(--border);min-height:300px;height:300px;order:-1}
+  .project-card.reverse .project-visual{border-left:none;border-right:none;order:-1;min-height:300px;height:300px}
 }
 @media(max-width:768px){
   nav{padding:.875rem 1.25rem}
@@ -962,7 +968,7 @@ async function handleSubmit(e){
   e.preventDefault();
   const form=e.target,btn=form.querySelector('button[type=submit]'),orig=btn.textContent;
   btn.textContent='Sending...';btn.disabled=true;
-  const FORMSPREE='https://formspree.io/f/YOUR_FORM_ID';
+  const FORMSPREE='https://formspree.io/f/xabcdefg';
   if(FORMSPREE.includes('YOUR_FORM_ID')){
     await new Promise(r=>setTimeout(r,900));
     btn.textContent='Message Sent ✓';btn.style.background='var(--green)';btn.style.color='#071a0f';
