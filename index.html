@@ -968,8 +968,8 @@ async function handleSubmit(e){
   e.preventDefault();
   const form=e.target,btn=form.querySelector('button[type=submit]'),orig=btn.textContent;
   btn.textContent='Sending...';btn.disabled=true;
-  const FORMSPREE='https://formspree.io/f/xabcdefg';
-  if(FORMSPREE.includes('https://formspree.io/f/xlgookqk')){
+  const FORMSPREE='https://formspree.io/f/xlgookqk';
+  if(FORMSPREE.includes('DISABLED')){
     await new Promise(r=>setTimeout(r,900));
     btn.textContent='Message Sent ✓';btn.style.background='var(--green)';btn.style.color='#071a0f';
     setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.disabled=false;form.reset()},3200);
