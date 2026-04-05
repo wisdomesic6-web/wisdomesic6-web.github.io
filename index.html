@@ -966,20 +966,38 @@ function filterProjects(cat,btn){
 // Contact form
 async function handleSubmit(e){
   e.preventDefault();
-  const form=e.target,btn=form.querySelector('button[type=submit]'),orig=btn.textContent;
-  btn.textContent='Sending...';btn.disabled=true;
-  const FORMSPREE='https://formspree.io/f/xlgookqk';
-  if(FORMSPREE.includes('DISABLED')){
-    await new Promise(r=>setTimeout(r,900));
-    btn.textContent='Message Sent ✓';btn.style.background='var(--green)';btn.style.color='#071a0f';
-    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.disabled=false;form.reset()},3200);
-    return;
-  }
+  const form=e.target;
+  const btn=form.querySelector('button[type=submit]');
+  const orig=btn.textContent;
+  btn.textContent='Sending...';
+  btn.disabled=true;
   try{
-    const res=await fetch(FORMSPREE,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
-    if(res.ok){btn.textContent='Message Sent ✓';btn.style.background='var(--green)';btn.style.color='#071a0f';form.reset();setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.disabled=false},3500)}
-    else{btn.textContent='Error — email me directly';btn.style.background='#ff6b6b';setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000)}
-  }catch{btn.textContent='Error — email me directly';btn.style.background='#ff6b6b';setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000)}
+    const res=await fetch('https://formspree.io/f/xlgookqk',{
+      method:'POST',
+      body:new FormData(form),
+      headers:{Accept:'application/json'}
+    });
+    if(res.ok){
+      btn.textContent='Message Sent ✓';
+      btn.style.background='var(--green)';
+      btn.style.color='#071a0f';
+      form.reset();
+      setTimeout(()=>{
+        btn.textContent=orig;
+        btn.style.background='';
+        btn.style.color='';
+        btn.disabled=false;
+      },3500);
+    } else {
+      btn.textContent='Error — email me directly';
+      btn.style.background='#ff6b6b';
+      setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000);
+    }
+  } catch(err){
+    btn.textContent='Error — email me directly';
+    btn.style.background='#ff6b6b';
+    setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000);
+  }
 }
 
 // Active nav
