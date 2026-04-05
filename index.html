@@ -9,320 +9,341 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
 <style>
 :root{
-  --bg:#0f1117;--bg2:#161921;--surface:#252a3a;--surface2:#2e3447;
-  --border:#2e3447;--border2:#3a4160;
-  --text:#f0ece4;--text2:#9da8c2;--text3:#6b788e;
-  --teal:#00d9b8;--teal-dim:#00a88f;--teal-bg:rgba(0,217,184,.08);--teal-border:rgba(0,217,184,.2);
-  --green:#4ade80;--green-bg:rgba(74,222,128,.09);--green-border:rgba(74,222,128,.25);
-  --amber:#f5a623;--amber-bg:rgba(245,166,35,.09);--amber-border:rgba(245,166,35,.25);
+  --bg:#0c0f16;--bg2:#13161f;--bg3:#1a1e2a;
+  --surface:#20263a;--surface2:#272e42;
+  --border:#272e42;--border2:#323d58;
+  --text:#f2ede5;--text2:#9aa6c0;--text3:#606d85;
+  --teal:#00e5c0;--teal-dim:#00b89a;--teal-bg:rgba(0,229,192,.07);--teal-border:rgba(0,229,192,.18);
+  --green:#3ddc84;--green-bg:rgba(61,220,132,.08);--green-border:rgba(61,220,132,.22);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,.08);--amber-border:rgba(245,166,35,.22);
   --red:#ff6b6b;
   --font-display:'DM Serif Display',Georgia,serif;
   --font-body:'DM Sans',system-ui,sans-serif;
-  --radius:12px;--radius-lg:20px;
-  --transition:0.25s cubic-bezier(.4,0,.2,1);
+  --radius:14px;--radius-lg:22px;--radius-xl:32px;
+  --transition:0.28s cubic-bezier(.4,0,.2,1);
+  --shadow-card:0 4px 24px rgba(0,0,0,.35);
+  --shadow-hover:0 20px 60px rgba(0,0,0,.45);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-weight:400;line-height:1.65;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
-/* ── NAV ── */
+/* ─── NAV ─── */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
   padding:1rem 2.5rem;
-  background:rgba(15,17,23,.9);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
+  background:rgba(12,15,22,.92);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(255,255,255,.05);
 }
-.nav-logo{font-family:var(--font-display);font-size:1.25rem;color:var(--text);text-decoration:none}
+.nav-logo{font-family:var(--font-display);font-size:1.25rem;color:var(--text);text-decoration:none;letter-spacing:-.01em}
 .nav-logo span{color:var(--teal)}
 .nav-links{display:flex;gap:2rem;list-style:none}
 .nav-links a{color:var(--text2);text-decoration:none;font-size:.875rem;transition:color var(--transition)}
 .nav-links a:hover{color:var(--text)}
-.nav-badge{display:flex;align-items:center;gap:.5rem;font-size:.75rem;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.3rem .75rem;border-radius:20px}
-.nav-badge::before{content:'';width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.nav-cta{background:var(--teal);color:#071410;font-weight:500;font-size:.8125rem;padding:.5rem 1.25rem;border-radius:6px;text-decoration:none;transition:background var(--transition),transform var(--transition)}
-.nav-cta:hover{background:var(--teal-dim);transform:translateY(-1px)}
+.nav-badge{display:flex;align-items:center;gap:.5rem;font-size:.7rem;font-weight:500;letter-spacing:.04em;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.3rem .875rem;border-radius:20px}
+.nav-badge::before{content:'';width:7px;height:7px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+.nav-cta{background:var(--teal);color:#061210;font-weight:500;font-size:.8125rem;padding:.5rem 1.25rem;border-radius:8px;text-decoration:none;letter-spacing:.01em;transition:background var(--transition),transform var(--transition),box-shadow var(--transition)}
+.nav-cta:hover{background:var(--teal-dim);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,229,192,.25)}
 .hamburger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:4px}
-.hamburger span{display:block;width:22px;height:1.5px;background:var(--text2);border-radius:2px}
+.hamburger span{display:block;width:22px;height:1.5px;background:var(--text2);border-radius:2px;transition:var(--transition)}
 .mobile-menu{display:none}
 
-/* ── STICKY CTA BAR ── */
+/* ─── STICKY CTA ─── */
 .sticky-cta{
-  position:fixed;bottom:1.5rem;right:1.5rem;z-index:99;
-  background:var(--teal);color:#071410;font-weight:500;font-size:.875rem;
-  padding:.75rem 1.5rem;border-radius:50px;text-decoration:none;
-  box-shadow:0 8px 32px rgba(0,217,184,.35);
+  position:fixed;bottom:1.75rem;right:1.75rem;z-index:99;
+  background:var(--teal);color:#061210;font-weight:600;font-size:.875rem;letter-spacing:.01em;
+  padding:.75rem 1.625rem;border-radius:50px;text-decoration:none;
+  box-shadow:0 8px 32px rgba(0,229,192,.4);
   display:flex;align-items:center;gap:.5rem;
-  transition:transform var(--transition),box-shadow var(--transition);
-  animation:fadeUp .5s .8s both;
+  transition:transform var(--transition),box-shadow var(--transition),opacity var(--transition);
+  animation:floatUp .6s .8s both;
 }
-.sticky-cta:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,217,184,.45)}
+@keyframes floatUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .sticky-cta::before{content:'⚡';font-size:.875rem}
+.sticky-cta:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,229,192,.5)}
 
-/* ── HERO ── */
-#hero{min-height:100vh;display:flex;align-items:center;padding:6rem 2.5rem 4rem;position:relative;overflow:hidden}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.2;mask-image:radial-gradient(ellipse 80% 70% at 60% 50%,black,transparent)}
-.hero-glow{position:absolute;top:20%;right:5%;width:600px;height:600px;background:radial-gradient(circle,rgba(0,217,184,.1) 0%,transparent 70%);pointer-events:none}
-.hero-glow2{position:absolute;bottom:10%;left:5%;width:400px;height:400px;background:radial-gradient(circle,rgba(245,166,35,.06) 0%,transparent 70%);pointer-events:none}
-.hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-size:.75rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem}
-.hero-eyebrow::before{content:'';width:24px;height:1px;background:var(--teal)}
-.hero-h1{font-family:var(--font-display);font-size:clamp(2.8rem,6vw,5rem);line-height:1.08;letter-spacing:-.02em;color:var(--text);margin-bottom:1.5rem;max-width:780px}
+/* ─── HERO ─── */
+#hero{min-height:100vh;display:flex;align-items:center;padding:7rem 2.5rem 5rem;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:64px 64px;mask-image:radial-gradient(ellipse 90% 80% at 65% 50%,black,transparent)}
+.hero-glow{position:absolute;top:15%;right:0;width:700px;height:700px;background:radial-gradient(circle,rgba(0,229,192,.09) 0%,transparent 65%);pointer-events:none}
+.hero-glow2{position:absolute;bottom:5%;left:-5%;width:500px;height:500px;background:radial-gradient(circle,rgba(245,166,35,.05) 0%,transparent 65%);pointer-events:none}
+.hero-inner{max-width:1120px;margin:0 auto;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.625rem;font-size:.7rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:1.75rem}
+.hero-eyebrow::before{content:'';width:28px;height:1px;background:var(--teal)}
+.hero-h1{font-family:var(--font-display);font-size:clamp(3rem,6.5vw,5.25rem);line-height:1.06;letter-spacing:-.025em;color:var(--text);margin-bottom:1.5rem;max-width:800px}
 .hero-h1 em{font-style:italic;color:var(--teal)}
-.hero-sub{font-size:1.125rem;color:var(--text2);max-width:560px;margin-bottom:1.75rem;line-height:1.75}
-.hero-proof{display:flex;align-items:center;gap:1.5rem;margin-bottom:2.5rem;flex-wrap:wrap}
-.hero-proof-item{font-size:.8125rem;color:var(--text2);display:flex;align-items:center;gap:.4rem}
-.hero-proof-item strong{color:var(--teal)}
-.hero-proof-item::before{content:'✓';color:var(--green);font-weight:500}
-.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem}
-.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#071410;font-weight:500;font-size:.9375rem;padding:.875rem 2rem;border-radius:8px;text-decoration:none;transition:background var(--transition),transform var(--transition),box-shadow var(--transition)}
-.btn-primary:hover{background:var(--teal-dim);transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,217,184,.3)}
-.btn-secondary{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--text);font-size:.9375rem;padding:.875rem 2rem;border-radius:8px;text-decoration:none;border:1px solid var(--border2);transition:border-color var(--transition),background var(--transition),transform var(--transition)}
-.btn-secondary:hover{border-color:var(--teal);background:var(--teal-bg);transform:translateY(-2px)}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-width:680px}
-.hero-stat{background:var(--bg2);padding:1.25rem 1rem;text-align:center}
-.hero-stat strong{display:block;font-family:var(--font-display);font-size:1.75rem;color:var(--teal);line-height:1}
-.hero-stat span{font-size:.75rem;color:var(--text3);line-height:1.4;margin-top:.3rem;display:block}
+.hero-sub{font-size:1.125rem;color:var(--text2);max-width:540px;margin-bottom:2rem;line-height:1.8}
 
-/* ── COMMON ── */
-section{padding:6rem 2.5rem}
-.container{max-width:1100px;margin:0 auto}
-.section-kicker{font-size:.7rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
-.section-kicker::after{content:'';flex:1;height:1px;background:var(--border2);max-width:40px}
-.section-title{font-family:var(--font-display);font-size:clamp(1.75rem,3.5vw,2.75rem);line-height:1.2;letter-spacing:-.02em;margin-bottom:1rem;color:var(--text)}
-.section-sub{font-size:1rem;color:var(--text2);max-width:560px;margin-bottom:3rem;line-height:1.7}
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-.fade-up{opacity:0;animation:fadeUp .7s cubic-bezier(.4,0,.2,1) forwards}
-.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.35s}.delay-4{animation-delay:.5s}.delay-5{animation-delay:.65s}
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+/* Proof badges */
+.hero-proof{display:flex;flex-wrap:wrap;gap:.625rem;margin-bottom:2.75rem}
+.proof-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:.5rem 1rem;font-size:.8125rem}
+.proof-badge strong{color:var(--teal);font-weight:600}
+.proof-badge span{color:var(--text2)}
+
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:4rem}
+
+/* Buttons */
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--teal);color:#061210;font-weight:600;font-size:.9375rem;padding:.9375rem 2.125rem;border-radius:10px;text-decoration:none;letter-spacing:.01em;transition:background var(--transition),transform var(--transition),box-shadow var(--transition);border:none;cursor:pointer;font-family:var(--font-body)}
+.btn-primary:hover{background:var(--teal-dim);transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,229,192,.32)}
+.btn-secondary{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--text);font-size:.9375rem;padding:.9375rem 2.125rem;border-radius:10px;text-decoration:none;border:1px solid var(--border2);transition:border-color var(--transition),background var(--transition),transform var(--transition)}
+.btn-secondary:hover{border-color:var(--teal);background:var(--teal-bg);transform:translateY(-3px)}
+.btn-lg{font-size:1rem;padding:1.0625rem 2.5rem;border-radius:12px}
+
+/* Hero stats */
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-width:660px}
+.hero-stat{background:var(--bg2);padding:1.375rem 1rem;text-align:center}
+.hero-stat strong{display:block;font-family:var(--font-display);font-size:1.875rem;color:var(--teal);line-height:1}
+.hero-stat span{font-size:.7rem;color:var(--text3);line-height:1.45;margin-top:.35rem;display:block}
+
+/* ─── COMMON ─── */
+section{padding:6.5rem 2.5rem}
+.container{max-width:1120px;margin:0 auto}
+.section-kicker{font-size:.68rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:.875rem;display:flex;align-items:center;gap:.5rem}
+.section-kicker::after{content:'';flex:1;height:1px;background:var(--border2);max-width:36px}
+.section-title{font-family:var(--font-display);font-size:clamp(1.875rem,3.5vw,2.875rem);line-height:1.15;letter-spacing:-.025em;margin-bottom:1rem;color:var(--text)}
+.section-sub{font-size:1rem;color:var(--text2);max-width:540px;margin-bottom:3rem;line-height:1.75}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{opacity:0;animation:fadeUp .75s cubic-bezier(.4,0,.2,1) forwards}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.22s}.delay-3{animation-delay:.38s}.delay-4{animation-delay:.54s}.delay-5{animation-delay:.7s}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 
-/* ── RESULTS STRIP ── */
-#results{padding:0 2.5rem;margin-bottom:0}
-.results-strip{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg2)}
-.result-item{padding:2rem 1.5rem;border-right:1px solid var(--border);position:relative;transition:background var(--transition)}
+/* ─── RESULTS STRIP ─── */
+#results{padding:2rem 2.5rem 0}
+.results-strip{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border2);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg2)}
+.result-item{padding:2.25rem 1.75rem;border-right:1px solid var(--border);transition:background var(--transition);cursor:default}
 .result-item:last-child{border-right:none}
 .result-item:hover{background:var(--surface)}
-.result-item strong{font-family:var(--font-display);font-size:2.75rem;color:var(--teal);display:block;line-height:1;margin-bottom:.5rem}
-.result-item p{font-size:.8125rem;color:var(--text2);line-height:1.5}
+.result-num{font-family:var(--font-display);font-size:3.25rem;color:var(--teal);display:block;line-height:1;margin-bottom:.5rem;letter-spacing:-.02em}
+.result-item p{font-size:.8rem;color:var(--text2);line-height:1.55}
 
-/* ── ABOUT ── */
+/* ─── ABOUT ─── */
 #about{background:var(--bg2)}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
-.about-text p{color:var(--text2);line-height:1.8;margin-bottom:1.25rem;font-size:.9375rem}
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:4.5rem;align-items:start}
+.about-text p{color:var(--text2);line-height:1.85;margin-bottom:1.25rem;font-size:.9375rem}
 .about-text p strong{color:var(--text)}
-.about-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.5rem}
-.tag{font-size:.75rem;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.3rem .75rem;border-radius:20px}
+.about-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.75rem}
+.tag{font-size:.75rem;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.3rem .8rem;border-radius:20px;transition:background var(--transition)}
+.tag:hover{background:rgba(0,229,192,.14)}
 .about-info{display:flex;flex-direction:column;gap:.75rem}
-.info-row{display:flex;gap:1rem;align-items:flex-start;padding:1rem 1.25rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border)}
-.info-row .info-label{font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);flex-shrink:0;width:90px;padding-top:.1rem}
-.info-row .info-val{font-size:.875rem;color:var(--text);line-height:1.5}
-.info-row .info-val .highlight{color:var(--teal)}
+.info-row{display:flex;gap:1rem;align-items:flex-start;padding:1rem 1.375rem;background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);transition:border-color var(--transition)}
+.info-row:hover{border-color:var(--border2)}
+.info-label{font-size:.68rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);flex-shrink:0;width:88px;padding-top:.15rem}
+.info-val{font-size:.875rem;color:var(--text);line-height:1.5}
+.info-val .highlight{color:var(--teal)}
 
-/* ── SERVICES ── */
+/* ─── SERVICES ─── */
+#services{background:var(--bg)}
 .services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.service-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;transition:border-color var(--transition),transform var(--transition),background var(--transition);position:relative;overflow:hidden}
-.service-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);opacity:0;transition:opacity var(--transition)}
-.service-card:hover{border-color:var(--border2);transform:translateY(-4px);background:var(--surface)}
-.service-card:hover::before{opacity:1}
-.svc-icon{font-size:1.5rem;margin-bottom:1rem;display:block}
-.svc-title{font-size:1rem;font-weight:500;color:var(--text);margin-bottom:.625rem}
-.svc-desc{font-size:.8125rem;color:var(--text2);line-height:1.7;margin-bottom:1rem}
-.svc-result{font-size:.75rem;color:var(--teal);font-weight:500;display:flex;align-items:center;gap:.4rem}
+.service-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);position:relative;overflow:hidden}
+.service-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,var(--teal) 50%,transparent 100%);opacity:0;transition:opacity var(--transition)}
+.service-card:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:var(--shadow-hover)}
+.service-card:hover::after{opacity:1}
+.svc-icon{font-size:1.75rem;margin-bottom:1.125rem;display:block}
+.svc-title{font-size:1.0625rem;font-weight:500;color:var(--text);margin-bottom:.625rem}
+.svc-desc{font-size:.8125rem;color:var(--text2);line-height:1.75;margin-bottom:1.25rem}
+.svc-result{font-size:.775rem;color:var(--teal);font-weight:500;display:flex;align-items:center;gap:.4rem;margin-bottom:.375rem}
 .svc-result::before{content:'→'}
-.svc-for{font-size:.7rem;color:var(--text3);margin-top:.375rem}
+.svc-for{font-size:.7rem;color:var(--text3)}
 
-/* ── WHO I WORK WITH ── */
+/* ─── AUDIENCE ─── */
 #audience{background:var(--bg2)}
 .audience-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
-.audience-card{display:flex;gap:1.25rem;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem;transition:border-color var(--transition),transform var(--transition)}
-.audience-card:hover{border-color:var(--teal-border);transform:translateY(-3px)}
-.audience-icon{font-size:1.75rem;flex-shrink:0;margin-top:.1rem}
+.audience-card{display:flex;gap:1.375rem;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition)}
+.audience-card:hover{border-color:var(--teal-border);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.audience-icon{font-size:2rem;flex-shrink:0;margin-top:.1rem}
 .audience-card h3{font-size:.9375rem;font-weight:500;color:var(--text);margin-bottom:.5rem}
-.audience-card p{font-size:.8125rem;color:var(--text2);line-height:1.7;margin-bottom:.625rem}
-.audience-builds{font-size:.75rem;color:var(--teal)}
+.audience-card p{font-size:.8125rem;color:var(--text2);line-height:1.75;margin-bottom:.625rem}
+.audience-builds{font-size:.775rem;color:var(--teal)}
 
-/* ── PROJECTS ── */
+/* ─── PROJECTS ─── */
 #projects{background:var(--bg)}
-.project-tabs{display:flex;gap:.5rem;margin-bottom:2.5rem;flex-wrap:wrap}
-.tab-btn{padding:.5rem 1.25rem;border-radius:6px;font-size:.8125rem;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all var(--transition)}
+.project-tabs{display:flex;gap:.5rem;margin-bottom:3rem;flex-wrap:wrap}
+.tab-btn{padding:.5rem 1.375rem;border-radius:8px;font-size:.8125rem;font-weight:400;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all var(--transition)}
 .tab-btn.active,.tab-btn:hover{background:var(--teal-bg);border-color:var(--teal-border);color:var(--teal)}
 
-/* PROJECT CARDS */
+/* Project card */
 .project-card{
+  display:grid;grid-template-columns:420px 1fr;
   background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
-  overflow:hidden;margin-bottom:2rem;
-  display:grid;grid-template-columns:1fr 420px;
+  overflow:hidden;margin-bottom:2.5rem;
   transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);
 }
-.project-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.project-card.reverse{grid-template-columns:420px 1fr}
-.project-body{padding:2.5rem;display:flex;flex-direction:column;justify-content:space-between;gap:1.5rem}
-.project-top{flex:1}
-.project-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap}
-.project-num{font-family:var(--font-display);font-size:.875rem;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.25rem .625rem;border-radius:4px;font-style:italic}
-.project-category{font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
-.project-card h3{font-family:var(--font-display);font-size:1.75rem;color:var(--text);margin-bottom:.375rem;line-height:1.15;letter-spacing:-.02em}
-.project-subtitle{font-size:.8125rem;color:var(--text3);margin-bottom:1.75rem;font-style:italic;line-height:1.5}
+.project-card:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:var(--shadow-hover)}
+.project-card.reverse{grid-template-columns:1fr 420px}
 
-/* Case study rows */
-.case-study{display:flex;flex-direction:column;gap:.875rem;margin-bottom:1.5rem}
-.cs-row{display:flex;gap:1rem;align-items:flex-start}
-.cs-label{font-size:.65rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border-radius:4px;flex-shrink:0;margin-top:.15rem;line-height:1.5;width:72px;text-align:center}
-.cs-label.prob{background:rgba(255,107,107,.12);color:#ff8989;border:1px solid rgba(255,107,107,.2)}
-.cs-label.sol{background:rgba(59,130,246,.1);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
-.cs-label.res{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
-.cs-text{font-size:.875rem;color:var(--text2);line-height:1.75}
-.cs-text strong{color:var(--text)}
-
-/* RESULT CALLOUT — visually dominant */
-.result-callout{
-  background:linear-gradient(135deg,rgba(74,222,128,.08),rgba(0,217,184,.06));
-  border:1px solid var(--green-border);
-  border-radius:var(--radius);
-  padding:1.25rem 1.5rem;
-  margin-bottom:1.5rem;
-  position:relative;
-  overflow:hidden;
-}
-.result-callout::before{content:'⭐ Result';font-size:.65rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:.625rem}
-.result-callout-text{font-size:1.0625rem;color:var(--text);line-height:1.6;font-weight:500}
-.result-callout-text em{color:var(--teal);font-style:normal;font-family:var(--font-display);font-size:1.25rem}
-.result-callout-sub{font-size:.8125rem;color:var(--text2);margin-top:.5rem;line-height:1.6}
-
-.project-tools{display:flex;flex-wrap:wrap;gap:.4rem}
-.tool-tag{font-size:.7rem;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:.2rem .6rem;border-radius:4px;transition:border-color var(--transition),color var(--transition)}
-.tool-tag:hover{border-color:var(--teal-border);color:var(--teal)}
-
-/* Project visual panel */
+/* Visual panel */
 .project-visual{
-  background:var(--surface);border-left:1px solid var(--border);
-  position:relative;overflow:hidden;min-height:420px;
+  position:relative;overflow:hidden;min-height:460px;
+  background:var(--surface);
 }
-.project-card.reverse .project-visual{border-left:none;border-right:1px solid var(--border)}
-.project-visual img{
-  position:absolute;top:0;left:0;
-  width:100%;height:100%;
-  object-fit:cover;object-position:top center;
-  opacity:.85;
-  transition:opacity var(--transition),transform var(--transition);
-  display:block;
-}
-.project-card:hover .project-visual img{opacity:1;transform:scale(1.03)}
-.project-visual-overlay{
-  position:absolute;inset:0;z-index:1;
-  background:linear-gradient(to top,rgba(15,17,23,.8) 0%,rgba(15,17,23,.1) 55%,transparent 100%);
-  pointer-events:none;
-}
+.project-card.reverse .project-visual{order:2}
+.project-visual img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:.82;transition:opacity var(--transition),transform .5s ease;display:block}
+.project-card:hover .project-visual img{opacity:1;transform:scale(1.04)}
+.project-visual-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(12,15,22,.9) 0%,rgba(12,15,22,.15) 50%,transparent 100%);pointer-events:none}
 .project-visual-badge{
-  position:absolute;bottom:1rem;left:1rem;right:1rem;z-index:2;
-  background:rgba(15,17,23,.9);border:1px solid var(--border2);
-  border-radius:var(--radius);padding:.75rem 1rem;
-  backdrop-filter:blur(12px);
-  display:flex;align-items:center;gap:.75rem;
+  position:absolute;bottom:1.25rem;left:1.25rem;right:1.25rem;z-index:2;
+  background:rgba(12,15,22,.92);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:.875rem 1.125rem;
+  backdrop-filter:blur(16px);
+  display:flex;align-items:center;gap:.875rem;
 }
 .pvb-metric{text-align:center;flex:1}
-.pvb-metric strong{display:block;font-family:var(--font-display);font-size:1.5rem;color:var(--teal);line-height:1}
-.pvb-metric span{font-size:.7rem;color:var(--text3);line-height:1.3}
-.pvb-divider{width:1px;height:2.5rem;background:var(--border2);flex-shrink:0}
+.pvb-metric strong{display:block;font-family:var(--font-display);font-size:1.625rem;color:var(--teal);line-height:1;letter-spacing:-.01em}
+.pvb-metric span{font-size:.68rem;color:var(--text3);line-height:1.35;margin-top:.25rem;display:block}
+.pvb-divider{width:1px;height:2.75rem;background:var(--border2);flex-shrink:0}
 
-/* ── WHY WORK WITH ME ── */
-#why{background:var(--bg2)}
-.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem}
-.why-card{
-  background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);
-  padding:1.75rem;transition:border-color var(--transition),transform var(--transition);
+/* Project body */
+.project-body{padding:2.75rem;display:flex;flex-direction:column;gap:1.5rem}
+.project-meta{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.project-num{font-family:var(--font-display);font-size:.875rem;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.3rem .7rem;border-radius:5px;font-style:italic}
+.project-category{font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
+.project-card h3{font-family:var(--font-display);font-size:1.875rem;color:var(--text);line-height:1.12;letter-spacing:-.02em;margin-bottom:.25rem}
+.project-subtitle{font-size:.8125rem;color:var(--text3);font-style:italic;line-height:1.55}
+
+/* Case study */
+.case-study{display:flex;flex-direction:column;gap:1rem}
+.cs-row{display:flex;gap:1rem;align-items:flex-start}
+.cs-label{font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:.3rem .7rem;border-radius:5px;flex-shrink:0;margin-top:.2rem;line-height:1.5;width:74px;text-align:center}
+.cs-label.prob{background:rgba(255,107,107,.1);color:#ff9090;border:1px solid rgba(255,107,107,.18)}
+.cs-label.sol{background:rgba(59,130,246,.09);color:#93c5fd;border:1px solid rgba(59,130,246,.18)}
+.cs-text{font-size:.875rem;color:var(--text2);line-height:1.8}
+.cs-text strong{color:var(--text)}
+
+/* ★ RESULT CALLOUT — most important element */
+.result-callout{
+  background:linear-gradient(135deg,rgba(61,220,132,.1) 0%,rgba(0,229,192,.06) 100%);
+  border:1.5px solid var(--green-border);
+  border-radius:var(--radius);
+  padding:1.5rem 1.75rem;
   position:relative;overflow:hidden;
 }
-.why-card:hover{border-color:var(--teal-border);transform:translateY(-3px)}
-.why-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),transparent);opacity:0;transition:opacity var(--transition)}
-.why-card:hover::after{opacity:1}
-.why-icon{font-size:2rem;margin-bottom:1rem;display:block}
-.why-card h3{font-size:.9375rem;font-weight:500;color:var(--text);margin-bottom:.625rem;line-height:1.4}
-.why-card p{font-size:.8125rem;color:var(--text2);line-height:1.75}
-.why-cta-row{margin-top:2.5rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}
-.why-cta-row p{font-size:.9375rem;color:var(--text2);max-width:480px;line-height:1.7}
+.result-callout::before{
+  content:'⭐ RESULT';
+  font-size:.62rem;font-weight:700;letter-spacing:.14em;
+  color:var(--green);display:block;margin-bottom:.75rem;
+}
+.result-callout-text{
+  font-family:var(--font-display);
+  font-size:1.375rem;
+  color:var(--text);line-height:1.4;
+  margin-bottom:.5rem;
+}
+.result-callout-text em{
+  color:var(--teal);font-style:normal;
+}
+.result-callout-sub{font-size:.8125rem;color:var(--text2);line-height:1.7}
 
-/* ── TOOLS ── */
-#tools{background:var(--bg)}
+.project-tools{display:flex;flex-wrap:wrap;gap:.4rem;padding-top:.25rem}
+.tool-tag{font-size:.7rem;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:.25rem .7rem;border-radius:5px;transition:border-color var(--transition),color var(--transition)}
+.tool-tag:hover{border-color:var(--teal-border);color:var(--teal)}
+
+/* ─── TOOLS ─── */
+#tools{background:var(--bg2)}
 .tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.tool-group{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem}
-.tool-group h3{font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.625rem;border-bottom:1px solid var(--border)}
+.tool-group{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.75rem}
+.tool-group h3{font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:1.125rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
 .tool-list{display:flex;flex-direction:column;gap:.5rem}
-.tool-item{font-size:.8125rem;color:var(--text2);padding:.375rem .625rem;border-radius:6px;transition:background var(--transition),color var(--transition);display:flex;align-items:center;gap:.5rem}
+.tool-item{font-size:.8125rem;color:var(--text2);padding:.4rem .7rem;border-radius:7px;transition:background var(--transition),color var(--transition);display:flex;align-items:center;gap:.625rem}
 .tool-item::before{content:'';width:4px;height:4px;background:var(--border2);border-radius:50%;flex-shrink:0;transition:background var(--transition)}
 .tool-item:hover{background:var(--teal-bg);color:var(--text)}
 .tool-item:hover::before{background:var(--teal)}
 
-/* ── OFFER ── */
-#offer{background:var(--bg2)}
-.offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start}
-.offer-left{background:linear-gradient(135deg,var(--bg) 0%,var(--surface) 100%);border:1px solid var(--teal-border);border-radius:var(--radius-lg);padding:2.5rem;position:relative;overflow:hidden}
-.offer-left::after{content:'FREE';position:absolute;top:1.5rem;right:1.5rem;font-size:.65rem;font-weight:500;letter-spacing:.12em;background:var(--teal);color:#071410;padding:.25rem .625rem;border-radius:4px}
-.offer-left h3{font-family:var(--font-display);font-size:1.875rem;color:var(--text);margin-bottom:1rem;line-height:1.2}
-.offer-left p{font-size:.875rem;color:var(--text2);line-height:1.75;margin-bottom:1rem}
-.offer-right{display:flex;flex-direction:column;gap:.625rem}
-.offer-item{display:flex;gap:.875rem;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;transition:border-color var(--transition)}
-.offer-item:hover{border-color:var(--teal-border)}
-.offer-check{color:var(--teal);font-size:.875rem;flex-shrink:0;margin-top:.15rem}
-.offer-item p{font-size:.875rem;color:var(--text2);line-height:1.5}
-.offer-item p strong{color:var(--text);display:block;margin-bottom:.2rem}
+/* ─── WHY WORK WITH ME ─── */
+#why{background:var(--bg)}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2.5rem}
+.why-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
+  padding:2rem;transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);
+  position:relative;overflow:hidden;
+}
+.why-card:hover{border-color:var(--teal-border);transform:translateY(-4px);box-shadow:0 14px 44px rgba(0,0,0,.3)}
+.why-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal) 0%,transparent 100%);opacity:0;transition:opacity var(--transition)}
+.why-card:hover::after{opacity:1}
+.why-icon{font-size:2.25rem;margin-bottom:1.125rem;display:block}
+.why-card h3{font-size:1rem;font-weight:500;color:var(--text);margin-bottom:.625rem;line-height:1.4}
+.why-card p{font-size:.8125rem;color:var(--text2);line-height:1.8}
+.why-cta-card{background:linear-gradient(135deg,var(--teal-bg),rgba(0,229,192,.04));border-color:var(--teal-border) !important;display:flex;flex-direction:column;justify-content:space-between}
 
-/* ── FINAL CTA ── */
-#cta{padding:7rem 2.5rem;background:linear-gradient(135deg,var(--bg2) 0%,var(--bg) 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center;position:relative;overflow:hidden}
-#cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(0,217,184,.06) 0%,transparent 70%);pointer-events:none}
+/* ─── OFFER ─── */
+#offer{background:var(--bg2)}
+.offer-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:start}
+.offer-left{background:linear-gradient(135deg,var(--bg) 0%,var(--surface) 100%);border:1.5px solid var(--teal-border);border-radius:var(--radius-lg);padding:2.75rem;position:relative;overflow:hidden}
+.offer-left::before{content:'FREE';position:absolute;top:1.5rem;right:1.5rem;font-size:.62rem;font-weight:700;letter-spacing:.14em;background:var(--teal);color:#061210;padding:.3rem .75rem;border-radius:5px}
+.offer-left h3{font-family:var(--font-display);font-size:2rem;color:var(--text);margin-bottom:1rem;line-height:1.2;max-width:320px}
+.offer-left p{font-size:.875rem;color:var(--text2);line-height:1.8;margin-bottom:1rem}
+.offer-right{display:flex;flex-direction:column;gap:.75rem}
+.offer-item{display:flex;gap:1rem;align-items:flex-start;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1.125rem 1.375rem;transition:border-color var(--transition),transform var(--transition)}
+.offer-item:hover{border-color:var(--teal-border);transform:translateX(4px)}
+.offer-check{color:var(--teal);font-size:1rem;flex-shrink:0;margin-top:.1rem;font-weight:600}
+.offer-item p{font-size:.875rem;color:var(--text2);line-height:1.6}
+.offer-item p strong{color:var(--text);display:block;margin-bottom:.25rem;font-size:.9375rem}
+
+/* ─── FINAL CTA ─── */
+#cta{
+  padding:8rem 2.5rem;
+  background:var(--bg2);
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  text-align:center;position:relative;overflow:hidden;
+}
+#cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(0,229,192,.07) 0%,transparent 65%);pointer-events:none}
 .cta-inner{position:relative;z-index:1}
-.cta-eyebrow{font-size:.75rem;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;display:block}
-#cta .section-title{margin:0 auto 1rem;max-width:700px}
-#cta .section-sub{margin:0 auto 2.5rem;text-align:center}
+.cta-eyebrow{font-size:.7rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:1.25rem;display:block}
+#cta .section-title{margin:0 auto 1.25rem;max-width:680px}
+#cta .section-sub{margin:0 auto 3rem;text-align:center;font-size:1.0625rem}
 .cta-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
 
-/* ── CONTACT ── */
+/* ─── CONTACT ─── */
 #contact{background:var(--bg)}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
-.contact-info p{font-size:.9375rem;color:var(--text2);line-height:1.75;margin-bottom:2rem}
-.contact-links{display:flex;flex-direction:column;gap:.75rem}
-.contact-link{display:flex;align-items:center;gap:.875rem;padding:.875rem 1.25rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text2);font-size:.875rem;text-decoration:none;transition:border-color var(--transition),color var(--transition),background var(--transition)}
-.contact-link:hover{border-color:var(--teal-border);background:var(--teal-bg);color:var(--text)}
-.contact-link span:first-child{font-size:1rem;flex-shrink:0}
-.contact-form{display:flex;flex-direction:column;gap:.875rem}
-.form-group{display:flex;flex-direction:column;gap:.375rem}
-.form-group label{font-size:.75rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)}
-.form-group input,.form-group textarea,.form-group select{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--font-body);font-size:.875rem;padding:.75rem 1rem;outline:none;transition:border-color var(--transition);-webkit-appearance:none}
-.form-group textarea{min-height:120px;resize:vertical}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--teal-dim)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.contact-left p{font-size:.9375rem;color:var(--text2);line-height:1.8;margin-bottom:2.25rem}
+.contact-links{display:flex;flex-direction:column;gap:.875rem}
+.contact-link{display:flex;align-items:center;gap:1rem;padding:1rem 1.375rem;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text2);font-size:.875rem;text-decoration:none;transition:border-color var(--transition),color var(--transition),background var(--transition),transform var(--transition)}
+.contact-link:hover{border-color:var(--teal-border);background:var(--teal-bg);color:var(--text);transform:translateX(4px)}
+.contact-link .cl-icon{font-size:1.125rem;flex-shrink:0}
+.contact-form{display:flex;flex-direction:column;gap:1rem}
+.form-group{display:flex;flex-direction:column;gap:.4rem}
+.form-group label{font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)}
+.form-group input,.form-group textarea,.form-group select{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-family:var(--font-body);font-size:.9rem;
+  padding:.875rem 1.125rem;outline:none;transition:border-color var(--transition),box-shadow var(--transition);
+  -webkit-appearance:none;
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,229,192,.1)}
+.form-group textarea{min-height:130px;resize:vertical;line-height:1.6}
 .form-group select option{background:var(--bg2)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.875rem}
-.btn-form{width:100%;justify-content:center;border:none;cursor:pointer;font-family:var(--font-body)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.btn-submit{width:100%;justify-content:center;border:none;cursor:pointer;font-family:var(--font-body);font-size:1rem;padding:1.0625rem;border-radius:10px;margin-top:.25rem}
 
-/* ── FOOTER ── */
-footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg)}
-.footer-text{font-size:.8125rem;color:var(--text3)}
+/* ─── FOOTER ─── */
+footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;align-items:center;justify-content:space-between;background:var(--bg)}
+.footer-text{font-size:.8rem;color:var(--text3)}
 .footer-text span{color:var(--teal)}
 
-/* ── RESPONSIVE ── */
-@media(max-width:1024px){
+/* ─── RESPONSIVE ─── */
+@media(max-width:1100px){
   .tools-grid{grid-template-columns:repeat(2,1fr)}
   .why-grid{grid-template-columns:repeat(2,1fr)}
   .project-card,.project-card.reverse{grid-template-columns:1fr;display:flex;flex-direction:column}
-  .project-card.reverse{flex-direction:column}
-  .project-visual{border-left:none;border-right:none;border-top:1px solid var(--border);min-height:300px;height:300px;order:-1}
-  .project-card.reverse .project-visual{border-left:none;border-right:none;order:-1;min-height:300px;height:300px}
+  .project-visual{min-height:300px;height:300px;order:-1;border-right:none;border-bottom:1px solid var(--border)}
+  .project-card.reverse .project-visual{order:-1;border-right:none}
 }
 @media(max-width:768px){
   nav{padding:.875rem 1.25rem}
-  .nav-links,.nav-badge{display:none}
+  .nav-links,.nav-badge,.nav-cta{display:none}
   .hamburger{display:flex}
-  .mobile-menu{display:none;position:fixed;inset:0;z-index:99;background:var(--bg);padding:5rem 2rem 2rem;flex-direction:column;gap:1.5rem}
+  .mobile-menu{display:none;position:fixed;inset:0;z-index:99;background:var(--bg);padding:5.5rem 2rem 2rem;flex-direction:column;gap:1.5rem}
   .mobile-menu.open{display:flex}
-  .mobile-menu a{font-size:1.25rem;color:var(--text2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1rem}
-  section{padding:4rem 1.25rem}
-  #hero{padding:5rem 1.25rem 3rem}
+  .mobile-menu a{font-size:1.25rem;color:var(--text2);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1.125rem}
+  section{padding:4.5rem 1.25rem}
+  #hero{padding:5.5rem 1.25rem 3.5rem}
   .hero-stats{grid-template-columns:repeat(2,1fr)}
   .hero-actions{flex-direction:column;align-items:flex-start}
   .about-grid,.contact-grid,.offer-grid{grid-template-columns:1fr}
@@ -332,18 +353,19 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
   .result-item:nth-child(3),.result-item:nth-child(4){border-bottom:none}
   .services-grid{grid-template-columns:1fr}
   .audience-grid{grid-template-columns:1fr}
-  .tools-grid{grid-template-columns:1fr 1fr}
   .why-grid{grid-template-columns:1fr}
-  footer{flex-direction:column;gap:.5rem;text-align:center}
+  .tools-grid{grid-template-columns:1fr 1fr}
+  footer{flex-direction:column;gap:.625rem;text-align:center}
   .form-row{grid-template-columns:1fr}
-  .nav-cta{display:none}
   .sticky-cta{bottom:1rem;right:1rem;font-size:.8rem;padding:.625rem 1.25rem}
-  .pvb-metric strong{font-size:1.25rem}
+  .pvb-metric strong{font-size:1.375rem}
+  .result-callout-text{font-size:1.1875rem}
 }
 @media(max-width:480px){
   .results-strip{grid-template-columns:1fr}
   .result-item{border-right:none}
   .tools-grid{grid-template-columns:1fr}
+  .hero-proof{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
@@ -376,7 +398,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
   <a href="#why" onclick="closeMobile()">Why Me</a>
   <a href="#offer" onclick="closeMobile()">Audit Offer</a>
   <a href="#contact" onclick="closeMobile()">Contact</a>
-  <a href="#offer" class="btn-primary" style="text-align:center" onclick="closeMobile()">Get Free Automation Audit →</a>
+  <a href="#offer" class="btn-primary" style="text-align:center;justify-content:center" onclick="closeMobile()">Get Free Automation Audit →</a>
 </nav>
 
 <!-- HERO -->
@@ -385,20 +407,20 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
   <div class="hero-glow"></div>
   <div class="hero-glow2"></div>
   <div class="hero-inner">
-    <div class="hero-eyebrow fade-up delay-1">AI Automation & Data Systems Specialist</div>
+    <div class="hero-eyebrow fade-up delay-1">AI Automation &amp; Data Systems Specialist</div>
     <h1 class="hero-h1 fade-up delay-2">I Build the Systems That Let Your Business <em>Run Without You.</em></h1>
-    <p class="hero-sub fade-up delay-3">I design intelligent workflows that eliminate manual work, surface business insights in real time, and help growing teams scale without adding headcount.</p>
+    <p class="hero-sub fade-up delay-3">Intelligent workflows that eliminate manual work, surface real-time insights, and help growing teams scale — without adding headcount.</p>
     <div class="hero-proof fade-up delay-3">
-      <div class="hero-proof-item"><strong>40+ hrs</strong>&nbsp;saved per client/month</div>
-      <div class="hero-proof-item"><strong>18%</strong>&nbsp;avg conversion lift</div>
-      <div class="hero-proof-item"><strong>5 tools → 1</strong>&nbsp;workflow</div>
+      <div class="proof-badge"><strong>40+ hrs</strong><span>saved per client / month</span></div>
+      <div class="proof-badge"><strong>18%</strong><span>avg lead conversion lift</span></div>
+      <div class="proof-badge"><strong>5 tools → 1</strong><span>connected workflow</span></div>
     </div>
     <div class="hero-actions fade-up delay-4">
-      <a href="#offer" class="btn-primary">Get Your Free Automation Audit →</a>
-      <a href="#projects" class="btn-secondary">See My Work ↓</a>
+      <a href="#offer" class="btn-primary btn-lg">Get Your Free Automation Audit →</a>
+      <a href="#projects" class="btn-secondary btn-lg">See My Work ↓</a>
     </div>
     <div class="hero-stats fade-up delay-5">
-      <div class="hero-stat"><strong>5+</strong><span>Years in Systems & Data</span></div>
+      <div class="hero-stat"><strong>5+</strong><span>Years in Systems &amp; Data</span></div>
       <div class="hero-stat"><strong>6+</strong><span>Projects Shipped</span></div>
       <div class="hero-stat"><strong>40+</strong><span>Hours Saved / Client</span></div>
       <div class="hero-stat"><strong>7</strong><span>Platforms Integrated</span></div>
@@ -409,10 +431,10 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
 <!-- RESULTS STRIP -->
 <div id="results">
   <div class="results-strip reveal">
-    <div class="result-item"><strong>40+</strong><p>Manual hours eliminated per client, per month</p></div>
-    <div class="result-item"><strong>18%</strong><p>Average improvement in qualified lead conversion</p></div>
-    <div class="result-item"><strong>5→1</strong><p>Tools replaced by one connected automation system</p></div>
-    <div class="result-item"><strong>60%</strong><p>Faster customer response via AI feedback handling</p></div>
+    <div class="result-item"><span class="result-num">40+</span><p>Manual hours eliminated per client, per month</p></div>
+    <div class="result-item"><span class="result-num">18%</span><p>Average improvement in qualified lead conversion</p></div>
+    <div class="result-item"><span class="result-num">5→1</span><p>Tools replaced by one connected automation system</p></div>
+    <div class="result-item"><span class="result-num">60%</span><p>Faster customer response via AI feedback handling</p></div>
   </div>
 </div>
 
@@ -423,9 +445,9 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
       <div class="about-text reveal">
         <div class="section-kicker">About Me</div>
         <h2 class="section-title">I Turn Expensive Manual Work Into Intelligent Systems</h2>
-        <p>Most businesses are paying people to do work a well-designed system could handle automatically — lead sorting, data entry, reporting, follow-ups. <strong>That's time and money leaving the business every single day.</strong></p>
-        <p>I have 5+ years of experience inside sales operations, financial systems, and data analytics. I understand where the real inefficiencies live — not just in theory, but from working inside the workflows that break.</p>
-        <p>I now combine that operations background with modern AI tools — n8n, Claude API, Power BI — to build systems that work 24/7. Whether you need a smarter lead pipeline, real-time dashboards, or a fully automated reporting workflow, I build it, connect it, and make sure it runs.</p>
+        <p>Most businesses pay people to do work a well-designed system could handle automatically — lead sorting, data entry, reporting, follow-ups. <strong>That's time and money leaving the business every single day.</strong></p>
+        <p>I have 5+ years inside sales operations, financial systems, and data analytics. I understand where real inefficiencies live — not just in theory, but from working inside the workflows that actually break.</p>
+        <p>I combine that background with modern AI tools — n8n, Claude API, Power BI — to build systems that work 24/7. Smarter lead pipelines, real-time dashboards, fully automated reporting. I build it, connect it, and make sure it runs.</p>
         <div class="about-tags">
           <span class="tag">AI Automation</span><span class="tag">n8n Workflows</span><span class="tag">Lead Qualification</span><span class="tag">BI Dashboards</span><span class="tag">CRM Systems</span><span class="tag">Data Pipelines</span><span class="tag">Voice Agents</span><span class="tag">API Integrations</span><span class="tag">ETL Design</span>
         </div>
@@ -452,41 +474,41 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
       <div class="service-card reveal">
         <span class="svc-icon">⚡</span>
         <div class="svc-title">AI Workflow Automation</div>
-        <p class="svc-desc">I map your manual processes and rebuild them as intelligent n8n workflows powered by Claude or ChatGPT APIs. Multi-step logic, conditional routing, automated notifications — running without human input.</p>
+        <p class="svc-desc">Rebuild manual processes as intelligent n8n workflows powered by Claude or ChatGPT APIs. Multi-step logic, conditional routing, automated notifications — running without human input.</p>
         <div class="svc-result">Eliminate 10–40+ hours of manual work per month</div>
         <div class="svc-for">Best for: Operations teams, agencies, growing SMBs</div>
       </div>
       <div class="service-card reveal">
         <span class="svc-icon">🎯</span>
-        <div class="svc-title">Lead Generation & Qualification</div>
+        <div class="svc-title">Lead Generation &amp; Qualification</div>
         <p class="svc-desc">End-to-end pipelines that scrape, score, and prioritize leads using AI — then trigger automated WhatsApp, email, or SMS follow-ups to the best prospects automatically.</p>
         <div class="svc-result">More time on hot leads, higher conversion rates</div>
         <div class="svc-for">Best for: Real estate agencies, sales teams, lead gen businesses</div>
       </div>
       <div class="service-card reveal">
         <span class="svc-icon">📊</span>
-        <div class="svc-title">Data Dashboards & Reporting</div>
-        <p class="svc-desc">Power BI and Looker Studio dashboards connected to live data. No manual exports, no stale spreadsheets. Leadership gets real-time KPIs and performance visibility, updated automatically.</p>
+        <div class="svc-title">Data Dashboards &amp; Reporting</div>
+        <p class="svc-desc">Power BI and Looker Studio dashboards connected to live data. No manual exports, no stale spreadsheets. Real-time KPIs, updated automatically.</p>
         <div class="svc-result">Real-time decisions, zero manual report preparation</div>
         <div class="svc-for">Best for: Sales leaders, finance teams, business owners</div>
       </div>
       <div class="service-card reveal">
         <span class="svc-icon">🔗</span>
-        <div class="svc-title">CRM & Outreach Automation</div>
-        <p class="svc-desc">Connect your lead sources to a structured CRM and build automated follow-up sequences — so every lead is tracked, no follow-up is missed, and outreach happens on schedule.</p>
+        <div class="svc-title">CRM &amp; Outreach Automation</div>
+        <p class="svc-desc">Connect lead sources to a structured CRM and build automated follow-up sequences — every lead tracked, no follow-up missed, outreach on schedule.</p>
         <div class="svc-result">Consistent pipeline running 24/7, zero missed leads</div>
         <div class="svc-for">Best for: Real estate, SaaS sales, service businesses</div>
       </div>
       <div class="service-card reveal">
         <span class="svc-icon">🏗️</span>
         <div class="svc-title">Business Process Optimization</div>
-        <p class="svc-desc">I audit your workflows, identify where time and money are leaking, and redesign your systems. Covers ETL pipelines, financial reporting, audit workflows, and cross-team data integration.</p>
+        <p class="svc-desc">Audit your workflows, identify where time and money are leaking, and redesign with automation. Covers ETL pipelines, financial reporting, audit workflows, and cross-team data integration.</p>
         <div class="svc-result">Faster processes, fewer errors, better data quality</div>
         <div class="svc-for">Best for: Growing teams, finance ops, multi-tool businesses</div>
       </div>
-      <div class="service-card reveal" style="background:var(--teal-bg);border-color:var(--teal-border);display:flex;flex-direction:column;justify-content:flex-end">
-        <p style="font-size:.875rem;color:var(--text2);line-height:1.7;margin-bottom:1.5rem">Not sure which service fits? A free 60-minute Automation Audit will show you exactly where your biggest opportunities are.</p>
-        <a href="#offer" class="btn-primary" style="font-size:.875rem">Get Free Audit →</a>
+      <div class="service-card reveal" style="background:var(--teal-bg);border-color:var(--teal-border);display:flex;flex-direction:column;justify-content:flex-end;gap:1.25rem">
+        <p style="font-size:.9rem;color:var(--text2);line-height:1.75">Not sure which service fits? A free 60-minute Automation Audit will show you exactly where your biggest opportunities are.</p>
+        <a href="#offer" class="btn-primary">Get Free Audit →</a>
       </div>
     </div>
   </div>
@@ -502,32 +524,32 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
       <div class="audience-card reveal">
         <div class="audience-icon">🏡</div>
         <div>
-          <h3>Real Estate Agencies & Agents</h3>
-          <p>You're generating leads but spending hours sourcing, vetting, and following up manually — no structured pipeline.</p>
+          <h3>Real Estate Agencies &amp; Agents</h3>
+          <p>Generating leads but spending hours sourcing, vetting, and following up manually — no structured pipeline to track where everyone is.</p>
           <div class="audience-builds">I build: AI lead scoring, WhatsApp automation, voice agents, CRM pipelines.</div>
         </div>
       </div>
       <div class="audience-card reveal">
         <div class="audience-icon">📈</div>
         <div>
-          <h3>Sales Teams & Revenue Ops</h3>
-          <p>Your team has data in five different places, reports take hours to pull, and there's no real-time visibility into what's working.</p>
+          <h3>Sales Teams &amp; Revenue Ops</h3>
+          <p>Data in five different places, reports take hours to pull, no real-time visibility into what's working and what isn't.</p>
           <div class="audience-builds">I build: Automated dashboards, KPI tracking, lead qualification pipelines.</div>
         </div>
       </div>
       <div class="audience-card reveal">
         <div class="audience-icon">🚀</div>
         <div>
-          <h3>Founders & Small Business Owners</h3>
-          <p>You're doing too many things manually, wearing too many hats, and your current setup doesn't scale.</p>
+          <h3>Founders &amp; Small Business Owners</h3>
+          <p>Doing too many things manually, wearing too many hats, and your current setup doesn't scale beyond where you are today.</p>
           <div class="audience-builds">I build: End-to-end workflow automation, AI assistants, reporting systems.</div>
         </div>
       </div>
       <div class="audience-card reveal">
         <div class="audience-icon">💼</div>
         <div>
-          <h3>Finance & Operations Teams</h3>
-          <p>You're preparing reports, reconciling data, and running audits manually — slow, error-prone, hard to scale.</p>
+          <h3>Finance &amp; Operations Teams</h3>
+          <p>Preparing reports, reconciling data, and running audits manually — slow, error-prone, and difficult to scale as the business grows.</p>
           <div class="audience-builds">I build: Audit automation, financial reporting pipelines, centralized data systems.</div>
         </div>
       </div>
@@ -538,46 +560,19 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
 <!-- PROJECTS -->
 <section id="projects">
   <div class="container">
-    <div class="reveal" style="margin-bottom:2rem">
+    <div class="reveal" style="margin-bottom:2.5rem">
       <div class="section-kicker">Case Studies</div>
       <h2 class="section-title">Real Systems. Real Problems. Real Results.</h2>
       <p class="section-sub">Every project solved a specific business challenge. These are live, functioning systems — not mockups.</p>
     </div>
     <div class="project-tabs reveal">
       <button class="tab-btn active" onclick="filterProjects('all',this)">All Projects</button>
-      <button class="tab-btn" onclick="filterProjects('ai',this)">AI Automation</button>
-      <button class="tab-btn" onclick="filterProjects('data',this)">Data &amp; BI</button>
+      <button class="tab-btn" onclick="filterProjects('ai',this)">🤖 AI Automation</button>
+      <button class="tab-btn" onclick="filterProjects('data',this)">📊 Data &amp; BI</button>
     </div>
 
     <!-- PROJECT 1 — Solwise -->
     <div class="project-card reveal" data-category="ai">
-      <div class="project-body">
-        <div class="project-top">
-          <div class="project-meta">
-            <span class="project-num">01</span>
-            <span class="project-category">AI Automation · Real Estate</span>
-          </div>
-          <h3>Solwise Realty AI Agent</h3>
-          <p class="project-subtitle">End-to-end real estate lead generation & qualification system — Lagos, Nigeria</p>
-          <div class="case-study">
-            <div class="cs-row">
-              <span class="cs-label prob">Problem</span>
-              <p class="cs-text">Agents manually sourced leads from Google Maps, vetted them by hand, and followed up inconsistently — hours of daily effort with no scoring system or CRM.</p>
-            </div>
-            <div class="cs-row">
-              <span class="cs-label sol">Solution</span>
-              <p class="cs-text">Built a fully automated pipeline: Apify scrapes leads → Claude API scores each on budget, intent, timeline, and location → hot leads trigger WhatsApp sequences. Vapi.ai voice agent and Botpress chatbot handle all inbound inquiries.</p>
-            </div>
-          </div>
-          <div class="result-callout">
-            <div class="result-callout-text"><em>5 manual tools replaced</em> by one connected workflow.</div>
-            <div class="result-callout-sub">Agents now spend time exclusively on pre-qualified, high-intent leads — saving hours of daily prospecting.</div>
-          </div>
-        </div>
-        <div class="project-tools">
-          <span class="tool-tag">n8n</span><span class="tool-tag">Apify</span><span class="tool-tag">Claude API</span><span class="tool-tag">WhatsApp (Meta API)</span><span class="tool-tag">Vapi.ai</span><span class="tool-tag">Botpress</span><span class="tool-tag">Google Sheets</span>
-        </div>
-      </div>
       <div class="project-visual">
         <img src="Solowise.png.png" alt="Solwise Realty AI Agent" loading="lazy"/>
         <div class="project-visual-overlay"></div>
@@ -589,12 +584,66 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
           <div class="pvb-metric"><strong>24/7</strong><span>Active pipeline</span></div>
         </div>
       </div>
+      <div class="project-body">
+        <div class="project-meta">
+          <span class="project-num">01</span>
+          <span class="project-category">AI Automation · Real Estate</span>
+        </div>
+        <div>
+          <h3>Solwise Realty AI Agent</h3>
+          <p class="project-subtitle">End-to-end real estate lead generation &amp; qualification — Lagos, Nigeria</p>
+        </div>
+        <div class="case-study">
+          <div class="cs-row">
+            <span class="cs-label prob">Problem</span>
+            <p class="cs-text">Agents manually sourced leads, vetted by hand, and followed up inconsistently — hours of daily effort with no scoring or CRM.</p>
+          </div>
+          <div class="cs-row">
+            <span class="cs-label sol">Solution</span>
+            <p class="cs-text">Apify scrapes leads → Claude API scores each on budget, intent, timeline &amp; location → hot leads trigger WhatsApp sequences. Vapi.ai voice agent and Botpress chatbot handle all inbound inquiries.</p>
+          </div>
+        </div>
+        <div class="result-callout">
+          <div class="result-callout-text"><em>5 manual tools replaced</em> by one connected workflow.</div>
+          <div class="result-callout-sub">Agents now work exclusively on pre-qualified, high-intent leads — saving hours every day.</div>
+        </div>
+        <div class="project-tools">
+          <span class="tool-tag">n8n</span><span class="tool-tag">Apify</span><span class="tool-tag">Claude API</span><span class="tool-tag">WhatsApp (Meta API)</span><span class="tool-tag">Vapi.ai</span><span class="tool-tag">Botpress</span><span class="tool-tag">Google Sheets</span>
+        </div>
+      </div>
     </div>
 
     <!-- PROJECT 2 — WIZZY -->
     <div class="project-card reverse reveal" data-category="ai">
+      <div class="project-body">
+        <div class="project-meta">
+          <span class="project-num">02</span>
+          <span class="project-category">AI Assistant · Executive Productivity</span>
+        </div>
+        <div>
+          <h3>WIZZY — Executive AI Assistant</h3>
+          <p class="project-subtitle">Cross-platform AI assistant with persistent memory, CRM &amp; smart reminders across 7 channels</p>
+        </div>
+        <div class="case-study">
+          <div class="cs-row">
+            <span class="cs-label prob">Problem</span>
+            <p class="cs-text">Executives juggled 5–7 messaging platforms, missed follow-ups, and managed CRM, reminders, and tasks across entirely separate tools — no connection between them.</p>
+          </div>
+          <div class="cs-row">
+            <span class="cs-label sol">Solution</span>
+            <p class="cs-text">WIZZY unifies WhatsApp, Telegram, Gmail, Instagram DM, Facebook Messenger, Discord, and Slack. Full conversation memory, smart reminders, and a built-in CRM — all powered by Claude AI.</p>
+          </div>
+        </div>
+        <div class="result-callout">
+          <div class="result-callout-text"><em>7 platforms, one system.</em> Zero missed follow-ups.</div>
+          <div class="result-callout-sub">Multiple productivity tools replaced by one intelligent, always-on executive assistant.</div>
+        </div>
+        <div class="project-tools">
+          <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">WhatsApp</span><span class="tool-tag">Telegram</span><span class="tool-tag">Gmail</span><span class="tool-tag">Google Calendar</span><span class="tool-tag">Google Sheets</span>
+        </div>
+      </div>
       <div class="project-visual">
-        <img src="Wizzy.png.png" alt="WIZZY Executive AI Assistant — n8n workflow" loading="lazy"/>
+        <img src="Wizzy.png.png" alt="WIZZY n8n workflow" loading="lazy"/>
         <div class="project-visual-overlay"></div>
         <div class="project-visual-badge">
           <div class="pvb-metric"><strong>7</strong><span>Platforms unified</span></div>
@@ -604,64 +653,10 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
           <div class="pvb-metric"><strong>1</strong><span>System for all</span></div>
         </div>
       </div>
-      <div class="project-body">
-        <div class="project-top">
-          <div class="project-meta">
-            <span class="project-num">02</span>
-            <span class="project-category">AI Assistant · Executive Productivity</span>
-          </div>
-          <h3>WIZZY — Executive AI Assistant</h3>
-          <p class="project-subtitle">Cross-platform AI assistant with persistent memory, CRM pipeline & smart reminders across 7 channels</p>
-          <div class="case-study">
-            <div class="cs-row">
-              <span class="cs-label prob">Problem</span>
-              <p class="cs-text">Executives juggled 5–7 messaging platforms, missed follow-ups, and managed CRM, reminders, and tasks across entirely separate tools — no connection between them.</p>
-            </div>
-            <div class="cs-row">
-              <span class="cs-label sol">Solution</span>
-              <p class="cs-text">Designed WIZZY — a unified AI assistant working across WhatsApp, Telegram, Gmail, Instagram DM, Facebook Messenger, Discord, and Slack. Retains full conversation memory, triggers smart reminders, and manages a built-in CRM — powered by Claude AI.</p>
-            </div>
-          </div>
-          <div class="result-callout">
-            <div class="result-callout-text"><em>7 platforms, one system.</em> Full memory. Zero missed follow-ups.</div>
-            <div class="result-callout-sub">Multiple productivity tools replaced by one intelligent, always-on executive assistant.</div>
-          </div>
-        </div>
-        <div class="project-tools">
-          <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">WhatsApp</span><span class="tool-tag">Telegram</span><span class="tool-tag">Gmail</span><span class="tool-tag">Google Calendar</span><span class="tool-tag">Google Sheets</span>
-        </div>
-      </div>
     </div>
 
     <!-- PROJECT 3 — Audit -->
     <div class="project-card reveal" data-category="ai">
-      <div class="project-body">
-        <div class="project-top">
-          <div class="project-meta">
-            <span class="project-num">03</span>
-            <span class="project-category">AI Automation · Finance & Compliance</span>
-          </div>
-          <h3>Automated Audit & Compliance System</h3>
-          <p class="project-subtitle">AI-powered financial audit workflow — anomaly detection, report generation & stakeholder delivery</p>
-          <div class="case-study">
-            <div class="cs-row">
-              <span class="cs-label prob">Problem</span>
-              <p class="cs-text">Finance teams spent days pulling records, running consistency checks, and writing audit summaries manually — slow, error-prone, and difficult to scale.</p>
-            </div>
-            <div class="cs-row">
-              <span class="cs-label sol">Solution</span>
-              <p class="cs-text">Built an automated audit pipeline: SQL queries extract financial records → Claude AI runs consistency checks and flags anomalies → structured reports are generated and emailed to stakeholders automatically on a schedule.</p>
-            </div>
-          </div>
-          <div class="result-callout">
-            <div class="result-callout-text"><em>Manual audit prep eliminated.</em> Reports arrive automatically.</div>
-            <div class="result-callout-sub">AI-flagged anomalies highlighted on delivery — finance teams now focus on resolution, not data collection.</div>
-          </div>
-        </div>
-        <div class="project-tools">
-          <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">SQL</span><span class="tool-tag">Google Sheets</span><span class="tool-tag">Gmail</span>
-        </div>
-      </div>
       <div class="project-visual">
         <img src="Audit.png.png" alt="AI Audit Intelligence Platform" loading="lazy"/>
         <div class="project-visual-overlay"></div>
@@ -673,10 +668,64 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
           <div class="pvb-metric"><strong>0</strong><span>Manual prep needed</span></div>
         </div>
       </div>
+      <div class="project-body">
+        <div class="project-meta">
+          <span class="project-num">03</span>
+          <span class="project-category">AI Automation · Finance &amp; Compliance</span>
+        </div>
+        <div>
+          <h3>Automated Audit &amp; Compliance System</h3>
+          <p class="project-subtitle">AI-powered financial audit — anomaly detection, report generation &amp; stakeholder delivery</p>
+        </div>
+        <div class="case-study">
+          <div class="cs-row">
+            <span class="cs-label prob">Problem</span>
+            <p class="cs-text">Finance teams spent days pulling records, running consistency checks, and writing audit summaries manually — slow, error-prone, and hard to scale.</p>
+          </div>
+          <div class="cs-row">
+            <span class="cs-label sol">Solution</span>
+            <p class="cs-text">SQL queries extract financial records → Claude AI runs consistency checks and flags anomalies → structured reports are generated and emailed to stakeholders on a schedule.</p>
+          </div>
+        </div>
+        <div class="result-callout">
+          <div class="result-callout-text"><em>Manual audit prep eliminated.</em> Reports arrive automatically.</div>
+          <div class="result-callout-sub">AI-flagged anomalies highlighted on delivery — teams now focus on resolution, not data collection.</div>
+        </div>
+        <div class="project-tools">
+          <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">SQL</span><span class="tool-tag">Google Sheets</span><span class="tool-tag">Gmail</span>
+        </div>
+      </div>
     </div>
 
     <!-- PROJECT 4 — Lead Qualification -->
     <div class="project-card reverse reveal" data-category="ai">
+      <div class="project-body">
+        <div class="project-meta">
+          <span class="project-num">04</span>
+          <span class="project-category">AI Automation · Sales Operations</span>
+        </div>
+        <div>
+          <h3>AI Lead Qualification Pipeline</h3>
+          <p class="project-subtitle">Automated AI scoring that filters and prioritizes inbound leads before they reach the sales team</p>
+        </div>
+        <div class="case-study">
+          <div class="cs-row">
+            <span class="cs-label prob">Problem</span>
+            <p class="cs-text">Sales reps manually vetted every lead with no consistent scoring — wasting time on cold prospects while high-intent buyers didn't get fast enough attention.</p>
+          </div>
+          <div class="cs-row">
+            <span class="cs-label sol">Solution</span>
+            <p class="cs-text">AI scoring engine evaluates leads from form submissions and LinkedIn data — scoring each on intent, budget, and fit — then routes qualified leads to HubSpot with a personalized outreach draft.</p>
+          </div>
+        </div>
+        <div class="result-callout">
+          <div class="result-callout-text">Qualified lead conversion improved by <em>18%.</em></div>
+          <div class="result-callout-sub">Sales team now focuses exclusively on pre-vetted, high-intent prospects — zero time wasted on cold leads.</div>
+        </div>
+        <div class="project-tools">
+          <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">HubSpot</span>
+        </div>
+      </div>
       <div class="project-visual">
         <img src="leads.png.png" alt="Lead Qualification Pipeline — Sales Dashboard" loading="lazy"/>
         <div class="project-visual-overlay"></div>
@@ -688,64 +737,10 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
           <div class="pvb-metric"><strong>Auto</strong><span>HubSpot routing</span></div>
         </div>
       </div>
-      <div class="project-body">
-        <div class="project-top">
-          <div class="project-meta">
-            <span class="project-num">04</span>
-            <span class="project-category">AI Automation · Sales Operations</span>
-          </div>
-          <h3>AI Lead Qualification Pipeline</h3>
-          <p class="project-subtitle">Automated AI scoring system that filters and prioritizes inbound leads before they reach the sales team</p>
-          <div class="case-study">
-            <div class="cs-row">
-              <span class="cs-label prob">Problem</span>
-              <p class="cs-text">Sales reps manually vetted every inbound lead with no consistent scoring — wasting time on cold prospects while high-intent buyers didn't get fast enough attention.</p>
-            </div>
-            <div class="cs-row">
-              <span class="cs-label sol">Solution</span>
-              <p class="cs-text">Built an AI scoring engine that evaluates leads from form submissions and LinkedIn data — scoring each on intent, budget, and fit — then routes qualified leads to HubSpot with a personalized outreach draft ready to send.</p>
-            </div>
-          </div>
-          <div class="result-callout">
-            <div class="result-callout-text">Qualified lead conversion improved by <em>18%.</em></div>
-            <div class="result-callout-sub">Sales team now focuses exclusively on pre-vetted, high-intent prospects — zero time wasted on cold leads.</div>
-          </div>
-        </div>
-        <div class="project-tools">
-          <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">HubSpot</span>
-        </div>
-      </div>
     </div>
 
     <!-- PROJECT 5 — Reporting -->
     <div class="project-card reveal" data-category="data">
-      <div class="project-body">
-        <div class="project-top">
-          <div class="project-meta">
-            <span class="project-num">05</span>
-            <span class="project-category">Data Analytics · Executive Reporting</span>
-          </div>
-          <h3>Executive Reporting & Data Pipeline</h3>
-          <p class="project-subtitle">Centralized BI pipeline with automated refresh — eliminating 40+ hours of manual consolidation per month</p>
-          <div class="case-study">
-            <div class="cs-row">
-              <span class="cs-label prob">Problem</span>
-              <p class="cs-text">Data was siloed across multiple platforms, requiring 10+ hours of manual consolidation every week before leadership could see any performance metrics.</p>
-            </div>
-            <div class="cs-row">
-              <span class="cs-label sol">Solution</span>
-              <p class="cs-text">Centralized all data sources into a single automated pipeline with scheduled refresh cycles, feeding real-time Power BI dashboards directly to leadership — no manual exports, no stale spreadsheets.</p>
-            </div>
-          </div>
-          <div class="result-callout">
-            <div class="result-callout-text"><em>40+ hours saved</em> per month. Live KPIs, zero manual prep.</div>
-            <div class="result-callout-sub">Leadership now makes decisions on live data — reports no longer bottleneck the team.</div>
-          </div>
-        </div>
-        <div class="project-tools">
-          <span class="tool-tag">SQL</span><span class="tool-tag">Power BI</span><span class="tool-tag">n8n</span>
-        </div>
-      </div>
       <div class="project-visual">
         <img src="reportying.png.png" alt="Agro Prime Sales Performance Dashboard — Power BI" loading="lazy"/>
         <div class="project-visual-overlay"></div>
@@ -757,6 +752,33 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
           <div class="pvb-metric"><strong>Auto</strong><span>Refresh cycles</span></div>
         </div>
       </div>
+      <div class="project-body">
+        <div class="project-meta">
+          <span class="project-num">05</span>
+          <span class="project-category">Data Analytics · Executive Reporting</span>
+        </div>
+        <div>
+          <h3>Executive Reporting &amp; Data Pipeline</h3>
+          <p class="project-subtitle">Centralized BI pipeline with automated refresh — eliminating 40+ hours of manual consolidation per month</p>
+        </div>
+        <div class="case-study">
+          <div class="cs-row">
+            <span class="cs-label prob">Problem</span>
+            <p class="cs-text">Data siloed across multiple platforms, requiring 10+ hours of manual consolidation weekly before leadership could see any performance metrics.</p>
+          </div>
+          <div class="cs-row">
+            <span class="cs-label sol">Solution</span>
+            <p class="cs-text">Centralized all data sources into a single automated pipeline with scheduled refresh cycles, feeding real-time Power BI dashboards directly to leadership.</p>
+          </div>
+        </div>
+        <div class="result-callout">
+          <div class="result-callout-text"><em>40+ hours saved</em> per month. Live KPIs, zero manual prep.</div>
+          <div class="result-callout-sub">Leadership makes decisions on live data — reports no longer bottleneck the team.</div>
+        </div>
+        <div class="project-tools">
+          <span class="tool-tag">SQL</span><span class="tool-tag">Power BI</span><span class="tool-tag">n8n</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -765,11 +787,11 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
 <section id="tools">
   <div class="container">
     <div class="section-kicker">My Stack</div>
-    <h2 class="section-title">Tools & Technologies</h2>
+    <h2 class="section-title">Tools &amp; Technologies</h2>
     <p class="section-sub">A production-proven stack. Every tool listed has been used in live project work.</p>
     <div class="tools-grid reveal">
       <div class="tool-group">
-        <h3>AI & Automation</h3>
+        <h3>AI &amp; Automation</h3>
         <div class="tool-list">
           <div class="tool-item">n8n (self-hosted workflows)</div>
           <div class="tool-item">Claude API (Anthropic)</div>
@@ -780,7 +802,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
         </div>
       </div>
       <div class="tool-group">
-        <h3>Data & Business Intelligence</h3>
+        <h3>Data &amp; Business Intelligence</h3>
         <div class="tool-list">
           <div class="tool-item">Power BI (DAX)</div>
           <div class="tool-item">Tableau</div>
@@ -791,7 +813,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
         </div>
       </div>
       <div class="tool-group">
-        <h3>Messaging & CRM</h3>
+        <h3>Messaging &amp; CRM</h3>
         <div class="tool-list">
           <div class="tool-item">WhatsApp (Meta Cloud API)</div>
           <div class="tool-item">Telegram Bot API</div>
@@ -802,14 +824,14 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
         </div>
       </div>
       <div class="tool-group">
-        <h3>Infrastructure & Lead Gen</h3>
+        <h3>Infrastructure &amp; Lead Gen</h3>
         <div class="tool-list">
           <div class="tool-item">Apify (Web Scraping)</div>
           <div class="tool-item">Cloudflare Tunnel</div>
           <div class="tool-item">Docker (Self-hosted n8n)</div>
           <div class="tool-item">Netlify (Deployment)</div>
           <div class="tool-item">Google OAuth2</div>
-          <div class="tool-item">Webhooks & Triggers</div>
+          <div class="tool-item">Webhooks &amp; Triggers</div>
         </div>
       </div>
     </div>
@@ -821,12 +843,12 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
   <div class="container">
     <div class="section-kicker">Why Work With Me</div>
     <h2 class="section-title">Not Just Another Automation Guy</h2>
-    <p class="section-sub">Here's what makes the difference between a system that looks good on paper and one that actually runs your business.</p>
+    <p class="section-sub">What makes the difference between a system that looks good on paper and one that actually runs your business.</p>
     <div class="why-grid">
       <div class="why-card reveal">
         <span class="why-icon">🏭</span>
         <h3>Real Operations Experience</h3>
-        <p>I spent 5+ years inside sales ops, finance, and data teams. I know where manual work actually hides — because I've done it. I don't theorize about inefficiency, I find it.</p>
+        <p>5+ years inside sales ops, finance, and data teams. I know where manual work actually hides — because I've done it. I don't theorize about inefficiency, I find it.</p>
       </div>
       <div class="why-card reveal">
         <span class="why-icon">📈</span>
@@ -835,24 +857,24 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
       </div>
       <div class="why-card reveal">
         <span class="why-icon">🔧</span>
-        <h3>Systems Built for the Real World</h3>
-        <p>My automations are designed to handle edge cases, errors, and real data — not just clean demo scenarios. They work when your team actually uses them.</p>
+        <h3>Built for the Real World</h3>
+        <p>My automations handle edge cases, errors, and real data — not just clean demo scenarios. They work when your team actually uses them every day.</p>
       </div>
       <div class="why-card reveal">
         <span class="why-icon">🧩</span>
         <h3>End-to-End Delivery</h3>
-        <p>I handle the entire process — workflow design, API integration, testing, deployment, and handover. You get a working system, not a half-finished prototype.</p>
+        <p>I handle everything — workflow design, API integration, testing, deployment, and handover. You get a working system, not a half-finished prototype.</p>
       </div>
       <div class="why-card reveal">
         <span class="why-icon">💡</span>
         <h3>Simplicity First</h3>
-        <p>Complex problems don't need complex systems. I specialize in taking tangled, multi-tool workflows and replacing them with one clean, connected solution that anyone on your team can understand.</p>
+        <p>Complex problems don't need complex systems. I replace tangled multi-tool workflows with one clean, connected solution anyone on your team can understand.</p>
       </div>
-      <div class="why-card reveal" style="background:var(--teal-bg);border-color:var(--teal-border);display:flex;flex-direction:column;justify-content:center;align-items:flex-start">
+      <div class="why-card why-cta-card reveal">
         <span class="why-icon">🚀</span>
-        <h3 style="color:var(--text)">Ready to see what's possible?</h3>
-        <p style="color:var(--text2);margin-bottom:1.5rem">Start with a free Automation Audit — I'll map your current workflows and show you exactly where the biggest opportunities are.</p>
-        <a href="#offer" class="btn-primary" style="font-size:.875rem">Let's Eliminate Your Manual Work →</a>
+        <h3>Ready to see what's possible?</h3>
+        <p style="margin-bottom:1.625rem">Start with a free Automation Audit — I'll map your current workflows and show you exactly where the biggest opportunities are.</p>
+        <a href="#offer" class="btn-primary">Let's Eliminate Your Manual Work →</a>
       </div>
     </div>
   </div>
@@ -863,13 +885,13 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
   <div class="container">
     <div class="section-kicker">Entry Offer</div>
     <h2 class="section-title">Not Sure Where to Start?</h2>
-    <p class="section-sub">Begin with a free Automation Audit — no jargon, no vague advice, just a specific breakdown of what to fix and in what order.</p>
+    <p class="section-sub">Begin with a free Automation Audit — no jargon, no vague advice. Just a specific breakdown of what to fix and in what order.</p>
     <div class="offer-grid reveal">
       <div class="offer-left">
         <h3>Free Automation Audit</h3>
         <p>Most businesses don't know which processes are costing them the most time until someone maps it out. This 60-minute session identifies your highest-impact automation opportunities and gives you a clear, prioritized action plan.</p>
-        <p style="font-size:.8125rem;color:var(--text3)">For business owners and team leads who know something needs to change — but aren't sure what to fix first.</p>
-        <a href="#contact" class="btn-primary" style="margin-top:1.5rem;display:inline-flex">See How Your Workflow Can Be Automated →</a>
+        <p style="font-size:.8rem;color:var(--text3)">For business owners and team leads who know something needs to change — but aren't sure what to fix first.</p>
+        <a href="#contact" class="btn-primary btn-lg" style="margin-top:1.75rem;display:inline-flex">See How Your Workflow Can Be Automated →</a>
       </div>
       <div class="offer-right">
         <div class="offer-item"><span class="offer-check">✓</span><p><strong>60-minute workflow deep-dive</strong>A focused session covering your current processes and biggest pain points.</p></div>
@@ -889,8 +911,8 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
     <h2 class="section-title reveal">Stop Losing Hours to Work a System Should Handle</h2>
     <p class="section-sub reveal">If your team is doing anything manually that happens more than once a week — lead sorting, data entry, reporting, follow-ups — there's a better way. Let's build it.</p>
     <div class="cta-actions reveal">
-      <a href="#contact" class="btn-primary">Let's Eliminate Your Manual Work →</a>
-      <a href="#projects" class="btn-secondary">View My Work First ↑</a>
+      <a href="#contact" class="btn-primary btn-lg">Let's Eliminate Your Manual Work →</a>
+      <a href="#projects" class="btn-secondary btn-lg">View My Work First ↑</a>
     </div>
   </div>
 </section>
@@ -901,13 +923,13 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
     <div class="section-kicker">Get in Touch</div>
     <h2 class="section-title">Let's Build Something That Works</h2>
     <div class="contact-grid">
-      <div class="reveal">
-        <p style="color:var(--text2);font-size:.9375rem;line-height:1.75;margin-bottom:2rem">I'm open to freelance projects, consulting engagements, and longer-term automation partnerships — globally and remotely. If you have a workflow problem, reach out and let's figure out the best solution together.</p>
+      <div class="contact-left reveal">
+        <p>Open to freelance projects, consulting engagements, and longer-term automation partnerships — globally and remotely. If you have a workflow problem, reach out and let's figure out the best solution together.</p>
         <div class="contact-links">
-          <a href="mailto:wisdomesic6@gmail.com" class="contact-link"><span>✉</span><span>wisdomesic6@gmail.com</span></a>
-          <a href="tel:+2348160829058" class="contact-link"><span>📞</span><span>+234 816 082 9058</span></a>
-          <a href="https://www.linkedin.com/in/wisdom-esic-5352091a6" target="_blank" class="contact-link"><span>🔗</span><span>LinkedIn: Wisdom Esic</span></a>
-          <div class="contact-link"><span>📍</span><span>Lagos, Nigeria · Open to Global Remote</span></div>
+          <a href="mailto:wisdomesic6@gmail.com" class="contact-link"><span class="cl-icon">✉</span><span>wisdomesic6@gmail.com</span></a>
+          <a href="tel:+2348160829058" class="contact-link"><span class="cl-icon">📞</span><span>+234 816 082 9058</span></a>
+          <a href="https://www.linkedin.com/in/wisdom-esic-5352091a6" target="_blank" rel="noopener" class="contact-link"><span class="cl-icon">🔗</span><span>LinkedIn: Wisdom Esic</span></a>
+          <div class="contact-link"><span class="cl-icon">📍</span><span>Lagos, Nigeria · Open to Global Remote</span></div>
         </div>
       </div>
       <form class="contact-form reveal" id="contactForm" onsubmit="handleSubmit(event)">
@@ -921,15 +943,15 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
           <select id="service" name="service">
             <option value="">Select a service...</option>
             <option>AI Workflow Automation</option>
-            <option>Lead Generation & Qualification</option>
-            <option>Data Dashboards & Reporting</option>
-            <option>CRM & Outreach Automation</option>
+            <option>Lead Generation &amp; Qualification</option>
+            <option>Data Dashboards &amp; Reporting</option>
+            <option>CRM &amp; Outreach Automation</option>
             <option>Business Process Optimization</option>
             <option>Free Automation Audit</option>
           </select>
         </div>
         <div class="form-group"><label for="message">Tell me about your project</label><textarea id="message" name="message" placeholder="What process is costing you the most time right now?"></textarea></div>
-        <button type="submit" class="btn-primary btn-form">Send Message →</button>
+        <button type="submit" class="btn-primary btn-submit">Send Message →</button>
       </form>
     </div>
   </div>
@@ -937,7 +959,7 @@ footer{border-top:1px solid var(--border);padding:1.5rem 2.5rem;display:flex;ali
 
 <!-- FOOTER -->
 <footer>
-  <p class="footer-text">© 2025 <span>Wisdom Esic</span> · AI Automation & Data Systems Specialist</p>
+  <p class="footer-text">© 2025 <span>Wisdom Esic</span> · AI Automation &amp; Data Systems Specialist</p>
   <p class="footer-text">Lagos, Nigeria · <span>Open to Global Remote Work</span></p>
 </footer>
 
@@ -951,7 +973,7 @@ function closeMobile(){mobileMenu.classList.remove('open')}
 // Scroll reveal
 const revealObserver=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revealObserver.unobserve(e.target)}});
-},{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+},{threshold:0.07,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.reveal').forEach(r=>revealObserver.observe(r));
 
 // Project tab filter
@@ -963,7 +985,7 @@ function filterProjects(cat,btn){
   });
 }
 
-// Contact form
+// Contact form — Formspree
 async function handleSubmit(e){
   e.preventDefault();
   const form=e.target;
@@ -980,42 +1002,36 @@ async function handleSubmit(e){
     if(res.ok){
       btn.textContent='Message Sent ✓';
       btn.style.background='var(--green)';
-      btn.style.color='#071a0f';
+      btn.style.color='#061a0e';
       form.reset();
-      setTimeout(()=>{
-        btn.textContent=orig;
-        btn.style.background='';
-        btn.style.color='';
-        btn.disabled=false;
-      },3500);
+      setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.style.color='';btn.disabled=false},3500);
     } else {
       btn.textContent='Error — email me directly';
-      btn.style.background='#ff6b6b';
+      btn.style.background='var(--red)';
       setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000);
     }
   } catch(err){
     btn.textContent='Error — email me directly';
-    btn.style.background='#ff6b6b';
+    btn.style.background='var(--red)';
     setTimeout(()=>{btn.textContent=orig;btn.style.background='';btn.disabled=false},3000);
   }
 }
 
-// Active nav
+// Active nav highlight on scroll
 const navLinks=document.querySelectorAll('.nav-links a');
 window.addEventListener('scroll',()=>{
   let cur='';
-  document.querySelectorAll('section[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-140)cur=s.id});
+  document.querySelectorAll('section[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-150)cur=s.id});
   navLinks.forEach(a=>{a.style.color=a.getAttribute('href')==='#'+cur?'var(--text)':''});
 },{passive:true});
 
-// Hide sticky CTA when contact section is visible
-const contactSection=document.getElementById('contact');
+// Hide sticky CTA near contact section
 const stickyCta=document.querySelector('.sticky-cta');
-const stickyObserver=new IntersectionObserver(entries=>{
+const contactObs=new IntersectionObserver(entries=>{
   stickyCta.style.opacity=entries[0].isIntersecting?'0':'1';
   stickyCta.style.pointerEvents=entries[0].isIntersecting?'none':'auto';
-},{threshold:0.1});
-stickyObserver.observe(contactSection);
+},{threshold:0.05});
+contactObs.observe(document.getElementById('contact'));
 </script>
 </body>
 </html>
