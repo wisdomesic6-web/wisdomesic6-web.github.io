@@ -168,39 +168,49 @@ section{padding:6.5rem 2.5rem}
 .tab-btn{padding:.5rem 1.375rem;border-radius:8px;font-size:.8125rem;font-weight:400;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all var(--transition)}
 .tab-btn.active,.tab-btn:hover{background:var(--teal-bg);border-color:var(--teal-border);color:var(--teal)}
 
-/* Project card */
+/* Project card — single column, no image */
 .project-card{
-  display:grid;grid-template-columns:420px 1fr;
   background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);
-  overflow:hidden;margin-bottom:2.5rem;
+  overflow:hidden;margin-bottom:2rem;
   transition:border-color var(--transition),transform var(--transition),box-shadow var(--transition);
 }
-.project-card:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:var(--shadow-hover)}
-.project-card.reverse{grid-template-columns:1fr 420px}
-
-/* Visual panel */
-.project-visual{
-  position:relative;overflow:hidden;min-height:460px;
-  background:var(--surface);
-}
-.project-card.reverse .project-visual{order:2}
-.project-visual img{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:.82;transition:opacity var(--transition),transform .5s ease;display:block}
-.project-card:hover .project-visual img{opacity:1;transform:scale(1.04)}
-.project-visual-overlay{position:absolute;inset:0;z-index:1;background:linear-gradient(to top,rgba(12,15,22,.9) 0%,rgba(12,15,22,.15) 50%,transparent 100%);pointer-events:none}
-.project-visual-badge{
-  position:absolute;bottom:1.25rem;left:1.25rem;right:1.25rem;z-index:2;
-  background:rgba(12,15,22,.92);border:1px solid var(--border2);
-  border-radius:var(--radius);padding:.875rem 1.125rem;
-  backdrop-filter:blur(16px);
-  display:flex;align-items:center;gap:.875rem;
-}
-.pvb-metric{text-align:center;flex:1}
-.pvb-metric strong{display:block;font-family:var(--font-display);font-size:1.625rem;color:var(--teal);line-height:1;letter-spacing:-.01em}
-.pvb-metric span{font-size:.68rem;color:var(--text3);line-height:1.35;margin-top:.25rem;display:block}
-.pvb-divider{width:1px;height:2.75rem;background:var(--border2);flex-shrink:0}
+.project-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:var(--shadow-hover)}
+.project-card.reverse{display:block}
 
 /* Project body */
-.project-body{padding:2.75rem;display:flex;flex-direction:column;gap:1.5rem}
+.project-body{padding:2.25rem 2.5rem;display:flex;flex-direction:column;gap:1.125rem}
+
+/* Metric bar (replaces visual badge) */
+.project-metrics{
+  display:flex;gap:1px;background:var(--border);border-radius:var(--radius);overflow:hidden;
+}
+.pvb-metric{flex:1;background:var(--surface);padding:.875rem 1rem;text-align:center}
+.pvb-metric strong{display:block;font-family:var(--font-display);font-size:1.5rem;color:var(--teal);line-height:1;letter-spacing:-.01em}
+.pvb-metric span{font-size:.68rem;color:var(--text3);line-height:1.35;margin-top:.25rem;display:block}
+.pvb-divider{width:1px;height:100%;background:var(--border);flex-shrink:0;align-self:stretch}
+
+/* GitHub / project button */
+.btn-github{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--surface2);color:var(--text2);
+  font-size:.875rem;font-weight:500;
+  padding:.625rem 1.375rem;border-radius:8px;
+  text-decoration:none;border:1px solid var(--border2);
+  transition:border-color var(--transition),background var(--transition),transform var(--transition),color var(--transition);
+  letter-spacing:.01em;
+}
+.btn-github::before{content:'⌥';font-size:.875rem;color:var(--teal)}
+.btn-github:hover{border-color:var(--teal-border);background:var(--teal-bg);color:var(--teal);transform:translateY(-2px)}
+.project-actions{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;padding-top:.25rem}
+
+/* Projects CTA strip */
+.projects-cta{
+  background:linear-gradient(135deg,rgba(0,229,192,.06),rgba(0,229,192,.02));
+  border:1.5px solid var(--teal-border);border-radius:var(--radius-lg);
+  padding:3rem;text-align:center;margin-top:2.5rem;
+}
+.projects-cta h3{font-family:var(--font-display);font-size:1.875rem;color:var(--text);margin-bottom:.875rem;line-height:1.25}
+.projects-cta p{font-size:.9375rem;color:var(--text2);margin-bottom:2rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.75}
 .project-meta{display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
 .project-num{font-family:var(--font-display);font-size:.875rem;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:.3rem .7rem;border-radius:5px;font-style:italic}
 .project-category{font-size:.68rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--text3)}
@@ -332,8 +342,7 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
   .tools-grid{grid-template-columns:repeat(2,1fr)}
   .why-grid{grid-template-columns:repeat(2,1fr)}
   .project-card,.project-card.reverse{grid-template-columns:1fr;display:flex;flex-direction:column}
-  .project-visual{min-height:300px;height:300px;order:-1;border-right:none;border-bottom:1px solid var(--border)}
-  .project-card.reverse .project-visual{order:-1;border-right:none}
+
 }
 @media(max-width:768px){
   nav{padding:.875rem 1.25rem}
@@ -573,16 +582,6 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
 
     <!-- PROJECT 1 — Solwise -->
     <div class="project-card reveal" data-category="ai">
-      <div class="project-visual">
-        <img src="Solowise.png.png" alt="Solwise Realty AI Agent" loading="lazy"/>
-        <div class="project-visual-overlay"></div>
-        <div class="project-visual-badge">
-          <div class="pvb-metric"><strong>5→1</strong><span>Tools replaced</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>100%</strong><span>Pre-qualified leads</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>24/7</strong><span>Active pipeline</span></div>
-        </div>
       </div>
       <div class="project-body">
         <div class="project-meta">
@@ -592,6 +591,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div>
           <h3>Solwise Realty AI Agent</h3>
           <p class="project-subtitle">End-to-end real estate lead generation &amp; qualification — Lagos, Nigeria</p>
+        </div>
+        
+        <div class="project-metrics">
+          <div class="pvb-metric"><strong>5→1</strong><span>Tools replaced</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>100%</strong><span>Pre-qualified leads</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>24/7</strong><span>Active pipeline</span></div>
         </div>
         <div class="case-study">
           <div class="cs-row">
@@ -610,11 +617,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div class="project-tools">
           <span class="tool-tag">n8n</span><span class="tool-tag">Apify</span><span class="tool-tag">Claude API</span><span class="tool-tag">WhatsApp (Meta API)</span><span class="tool-tag">Vapi.ai</span><span class="tool-tag">Botpress</span><span class="tool-tag">Google Sheets</span>
         </div>
+        <div class="project-actions">
+          <a href="https://github.com/yourusername/solwise-realty-ai-agent" target="_blank" rel="noopener" class="btn-github">View Full Project →</a>
+        </div>
       </div>
     </div>
 
     <!-- PROJECT 2 — WIZZY -->
-    <div class="project-card reverse reveal" data-category="ai">
+    <div class="project-card reveal" data-category="ai">
       <div class="project-body">
         <div class="project-meta">
           <span class="project-num">02</span>
@@ -623,6 +633,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div>
           <h3>WIZZY — Executive AI Assistant</h3>
           <p class="project-subtitle">Cross-platform AI assistant with persistent memory, CRM &amp; smart reminders across 7 channels</p>
+        </div>
+        
+        <div class="project-metrics">
+          <div class="pvb-metric"><strong>7</strong><span>Platforms unified</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>0</strong><span>Missed follow-ups</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>1</strong><span>System for all</span></div>
         </div>
         <div class="case-study">
           <div class="cs-row">
@@ -641,32 +659,15 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div class="project-tools">
           <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">WhatsApp</span><span class="tool-tag">Telegram</span><span class="tool-tag">Gmail</span><span class="tool-tag">Google Calendar</span><span class="tool-tag">Google Sheets</span>
         </div>
-      </div>
-      <div class="project-visual">
-        <img src="Wizzy.png.png" alt="WIZZY n8n workflow" loading="lazy"/>
-        <div class="project-visual-overlay"></div>
-        <div class="project-visual-badge">
-          <div class="pvb-metric"><strong>7</strong><span>Platforms unified</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>0</strong><span>Missed follow-ups</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>1</strong><span>System for all</span></div>
+        <div class="project-actions">
+          <a href="https://github.com/yourusername/wizzy-ai-assistant" target="_blank" rel="noopener" class="btn-github">View Full Project →</a>
         </div>
+      </div>
       </div>
     </div>
 
     <!-- PROJECT 3 — Audit -->
     <div class="project-card reveal" data-category="ai">
-      <div class="project-visual">
-        <img src="Audit.png.png" alt="AI Audit Intelligence Platform" loading="lazy"/>
-        <div class="project-visual-overlay"></div>
-        <div class="project-visual-badge">
-          <div class="pvb-metric"><strong>100%</strong><span>Automated delivery</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>AI</strong><span>Anomaly detection</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>0</strong><span>Manual prep needed</span></div>
-        </div>
       </div>
       <div class="project-body">
         <div class="project-meta">
@@ -676,6 +677,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div>
           <h3>Automated Audit &amp; Compliance System</h3>
           <p class="project-subtitle">AI-powered financial audit — anomaly detection, report generation &amp; stakeholder delivery</p>
+        </div>
+        
+        <div class="project-metrics">
+          <div class="pvb-metric"><strong>100%</strong><span>Automated delivery</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>AI</strong><span>Anomaly detection</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>0</strong><span>Manual prep needed</span></div>
         </div>
         <div class="case-study">
           <div class="cs-row">
@@ -694,11 +703,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div class="project-tools">
           <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">SQL</span><span class="tool-tag">Google Sheets</span><span class="tool-tag">Gmail</span>
         </div>
+        <div class="project-actions">
+          <a href="https://github.com/yourusername/automated-audit-system" target="_blank" rel="noopener" class="btn-github">View Full Project →</a>
+        </div>
       </div>
     </div>
 
     <!-- PROJECT 4 — Lead Qualification -->
-    <div class="project-card reverse reveal" data-category="ai">
+    <div class="project-card reveal" data-category="ai">
       <div class="project-body">
         <div class="project-meta">
           <span class="project-num">04</span>
@@ -707,6 +719,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div>
           <h3>AI Lead Qualification Pipeline</h3>
           <p class="project-subtitle">Automated AI scoring that filters and prioritizes inbound leads before they reach the sales team</p>
+        </div>
+        
+        <div class="project-metrics">
+          <div class="pvb-metric"><strong>18%</strong><span>Conversion lift</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>AI</strong><span>Lead scoring</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>Auto</strong><span>HubSpot routing</span></div>
         </div>
         <div class="case-study">
           <div class="cs-row">
@@ -725,32 +745,15 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div class="project-tools">
           <span class="tool-tag">n8n</span><span class="tool-tag">Claude API</span><span class="tool-tag">HubSpot</span>
         </div>
-      </div>
-      <div class="project-visual">
-        <img src="leads.png.png" alt="Lead Qualification Pipeline — Sales Dashboard" loading="lazy"/>
-        <div class="project-visual-overlay"></div>
-        <div class="project-visual-badge">
-          <div class="pvb-metric"><strong>18%</strong><span>Conversion lift</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>AI</strong><span>Lead scoring</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>Auto</strong><span>HubSpot routing</span></div>
+        <div class="project-actions">
+          <a href="https://github.com/yourusername/ai-lead-qualification-pipeline" target="_blank" rel="noopener" class="btn-github">View Full Project →</a>
         </div>
+      </div>
       </div>
     </div>
 
     <!-- PROJECT 5 — Reporting -->
     <div class="project-card reveal" data-category="data">
-      <div class="project-visual">
-        <img src="reportying.png.png" alt="Agro Prime Sales Performance Dashboard — Power BI" loading="lazy"/>
-        <div class="project-visual-overlay"></div>
-        <div class="project-visual-badge">
-          <div class="pvb-metric"><strong>40+</strong><span>Hours saved/month</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>Live</strong><span>KPI dashboards</span></div>
-          <div class="pvb-divider"></div>
-          <div class="pvb-metric"><strong>Auto</strong><span>Refresh cycles</span></div>
-        </div>
       </div>
       <div class="project-body">
         <div class="project-meta">
@@ -760,6 +763,14 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div>
           <h3>Executive Reporting &amp; Data Pipeline</h3>
           <p class="project-subtitle">Centralized BI pipeline with automated refresh — eliminating 40+ hours of manual consolidation per month</p>
+        </div>
+        
+        <div class="project-metrics">
+          <div class="pvb-metric"><strong>40+</strong><span>Hours saved/month</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>Live</strong><span>KPI dashboards</span></div>
+          <div class="pvb-divider"></div>
+          <div class="pvb-metric"><strong>Auto</strong><span>Refresh cycles</span></div>
         </div>
         <div class="case-study">
           <div class="cs-row">
@@ -778,7 +789,16 @@ footer{border-top:1px solid var(--border);padding:1.75rem 2.5rem;display:flex;al
         <div class="project-tools">
           <span class="tool-tag">SQL</span><span class="tool-tag">Power BI</span><span class="tool-tag">n8n</span>
         </div>
+        <div class="project-actions">
+          <a href="https://github.com/yourusername/executive-reporting-pipeline" target="_blank" rel="noopener" class="btn-github">View Full Project →</a>
+        </div>
       </div>
+    </div>
+
+    <div class="projects-cta reveal">
+      <h3>Want something like this for your business?</h3>
+      <p>Every project above started with a conversation about a manual process that was costing time. Let's find yours.</p>
+      <a href="#contact" class="btn-primary btn-lg">Let's Build Your Automation System →</a>
     </div>
   </div>
 </section>
