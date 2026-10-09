@@ -144,6 +144,146 @@ export const db = {
     if (error) throw error;
   },
 
+  /* Creating an order: the header gets a gap-free document number from
+     the database, then the lines, then an optional deposit. Done in that
+     order so a failure never leaves a numbered order with no contents. */
+  async createOrder(companyId, { contactId, contactName, dueAt, taxRate, deliveryFee,
+                                 notes, sourceChannel, docType, status, lines, deposit }) {
+    const { data: docNo, error: numErr } = await SB.rpc('next_doc_number', {
+      p_company: companyId, p_doc_type: docType || 'sales_order' });
+    if (numErr) throw numErr;
+
+    const { data: order, error } = await SB.from('orders').insert({
+      company_id: companyId, doc_type: docType || 'sales_order', doc_no: docNo,
+      contact_id: contactId || null, contact_name: contactName || null,
+      status: status || 'confirmed', source_channel: sourceChannel || 'manual',
+      due_at: dueAt || null, tax_rate: taxRate ?? 0, delivery_fee: deliveryFee ?? 0,
+      notes: notes || null
+    }).select().single();
+    if (error) throw error;
+
+    const rows = (lines || []).filter(l => l.description || l.itemId).map((l, i) => ({
+      order_id: order.id, item_id: l.itemId || null,
+      description: l.description || '', qty: Number(l.qty) || 0,
+      unit_price: Number(l.unitPrice) || 0, line_no: i + 1
+    }));
+    if (rows.length) {
+      const { error: lineErr } = await SB.from('order_lines').insert(rows);
+      if (lineErr) throw lineErr;
+    }
+    if (Number(deposit) > 0) {
+      await this.addPayment(companyId, order.id, contactId || null,
+        Number(deposit), 'transfer', true);
+    }
+    return order;
+  },
+
+  async updateOrder(orderId, fields) {
+    const { error } = await SB.from('orders').update(fields).eq('id', orderId);
+    if (error) throw error;
+  },
+
+  async replaceOrderLines(orderId, lines) {
+    const { error: delErr } = await SB.from('order_lines').delete().eq('order_id', orderId);
+    if (delErr) throw delErr;
+    const rows = (lines || []).filter(l => l.description || l.itemId).map((l, i) => ({
+      order_id: orderId, item_id: l.itemId || null,
+      description: l.description || '', qty: Number(l.qty) || 0,
+      unit_price: Number(l.unitPrice) || 0, line_no: i + 1
+    }));
+    if (rows.length) {
+      const { error } = await SB.from('order_lines').insert(rows);
+      if (error) throw error;
+    }
+  },
+
+  /* A quote becomes an order. It keeps its own number so the thread back
+     to the original enquiry is not lost. */
+  async convertQuoteToOrder(companyId, orderId, deposit, contactId) {
+    const { data: docNo, error: numErr } = await SB.rpc('next_doc_number', {
+      p_company: companyId, p_doc_type: 'sales_order' });
+    if (numErr) throw numErr;
+    const { error } = await SB.from('orders')
+      .update({ doc_type: 'sales_order', doc_no: docNo, status: 'confirmed' })
+      .eq('id', orderId);
+    if (error) throw error;
+    if (Number(deposit) > 0) {
+      await this.addPayment(companyId, orderId, contactId || null, Number(deposit), 'transfer', true);
+    }
+  },
+
+  async recordExpense(companyId, date, memo, accountCode, amount) {
+    const { error } = await SB.rpc('post_expense', {
+      p_company: companyId, p_date: date, p_memo: memo,
+      p_account_code: accountCode, p_amount: amount });
+    if (error) throw error;
+  },
+
+  async expenseAccounts() {
+    const { data, error } = await SB.from('accounts')
+      .select('code, name').eq('type', 'expense').eq('active', true).order('code');
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createItem(companyId, fields) {
+    const { data, error } = await SB.from('items')
+      .insert({ company_id: companyId, ...fields }).select().single();
+    if (error) throw error;
+    return data;
+  },
+
+  /* Finishing a job writes what was really consumed, what was wasted and
+     what came out — four kinds of movement, so the stock figure stays
+     explainable afterwards. */
+  async completeProduction(companyId, jobId, { produced, wasted, consumption, locationId, itemId }) {
+    const moves = [];
+    for (const c of (consumption || [])) {
+      if (Number(c.qtyUsed) > 0) moves.push({
+        company_id: companyId, item_id: c.componentId, location_id: locationId || null,
+        reason: 'consumption', qty: -Math.abs(Number(c.qtyUsed)),
+        unit_cost: Number(c.unitCost) || null,
+        source_type: 'production_job', source_id: jobId });
+      if (Number(c.qtyWasted) > 0) moves.push({
+        company_id: companyId, item_id: c.componentId, location_id: locationId || null,
+        reason: 'wastage', qty: -Math.abs(Number(c.qtyWasted)),
+        unit_cost: Number(c.unitCost) || null,
+        source_type: 'production_job', source_id: jobId });
+    }
+    const materialCost = (consumption || []).reduce(
+      (s, c) => s + (Number(c.qtyUsed) + Number(c.qtyWasted || 0)) * (Number(c.unitCost) || 0), 0);
+
+    if (Number(produced) > 0) moves.push({
+      company_id: companyId, item_id: itemId, location_id: locationId || null,
+      reason: 'output', qty: Math.abs(Number(produced)),
+      unit_cost: Number(produced) ? materialCost / Number(produced) : null,
+      source_type: 'production_job', source_id: jobId });
+
+    if (moves.length) {
+      const { error } = await SB.from('stock_movements').insert(moves);
+      if (error) throw error;
+    }
+    const { error: jobErr } = await SB.from('production_jobs').update({
+      status: 'done', qty_produced: Number(produced) || 0, qty_wasted: Number(wasted) || 0,
+      completed_at: new Date().toISOString(),
+      material_cost: Math.round(materialCost * 100) / 100
+    }).eq('id', jobId);
+    if (jobErr) throw jobErr;
+  },
+
+  async startProduction(jobId) {
+    const { error } = await SB.from('production_jobs')
+      .update({ status: 'in_progress', started_at: new Date().toISOString() }).eq('id', jobId);
+    if (error) throw error;
+  },
+
+  async defaultLocation() {
+    const { data, error } = await SB.from('locations')
+      .select('id').eq('is_default', true).limit(1).maybeSingle();
+    if (error) throw error;
+    return data ? data.id : null;
+  },
+
   async addContact(companyId, fields) {
     const { data, error } = await SB.from('contacts')
       .insert({ company_id: companyId, is_customer: true, ...fields })

@@ -162,10 +162,15 @@ function openDrawer(){
 }
 function openSheet(){
   $('#sheetTitle').textContent = 'Add new';
+  const canSell = navFor().side.includes('orders');
+  const canSpend = navFor().side.includes('ledger');
   const actions = [
-    {ico:'₦', name:'Record a payment', why:'Cash, transfer or POS just came in', fn: sheetPayment},
-    {ico:'☺', name:'New customer',     why:'Somebody new is buying from you',    fn: sheetCustomer}
-  ];
+    canSell  && {ico:'❐', name:'New order',        why:'A customer confirmed and is paying',   fn:()=>sheetOrder('sales_order')},
+    canSell  && {ico:'✉', name:'New enquiry',      why:'Someone asked a price, no deposit yet', fn:()=>sheetOrder('quote')},
+    canSell  && {ico:'₦', name:'Record a payment', why:'Cash, transfer or POS just came in',    fn: sheetPayment},
+    canSpend && {ico:'↑', name:'Record an expense',why:'You bought flour, fuel or packaging',   fn: sheetExpense},
+    canSell  && {ico:'☺', name:'New customer',     why:'Somebody new is buying from you',       fn: sheetCustomer}
+  ].filter(Boolean);
   $('#sheetBody').innerHTML = actions.map((a,i) =>
     `<button class="sheet-action" data-act="${i}">
        <span class="sa-ico">${a.ico}</span>
@@ -247,6 +252,288 @@ async function sheetPayment(){
   };
 }
 
+/* ---------------------------- order editor ----------------------------
+   One form for a quote and for an order. A quote takes no deposit and
+   claims no slot in production; an order does both. */
+let draft = null;
+
+async function sheetOrder(docType, existing){
+  const [contacts, items] = await Promise.all([
+    cached('contacts', () => db.contacts()), cached('items', () => db.items())]);
+  const sellable = items.filter(i => i.kind !== 'raw_material');
+  const isQuote = docType === 'quote';
+
+  draft = existing ? {
+    id: existing.id, contactId: existing.contact?.id || '', dueAt: existing.due_at ? existing.due_at.slice(0,10) : '',
+    taxRate: Number(existing.tax_rate) * 100, deliveryFee: Number(existing.delivery_fee) || 0,
+    notes: existing.notes || '', deposit: 0,
+    lines: (existing.lines || []).map(l => ({ itemId: l.item?.id || '', description: l.description || '',
+      qty: Number(l.qty), unitPrice: Number(l.unit_price) }))
+  } : { contactId:'', dueAt:'', taxRate:7.5, deliveryFee:0, notes:'', deposit:0,
+        lines:[{itemId:'', description:'', qty:1, unitPrice:0}] };
+  if (!draft.lines.length) draft.lines.push({itemId:'', description:'', qty:1, unitPrice:0});
+
+  function totals(){
+    const sub = draft.lines.reduce((t,l) => t + Number(l.qty||0) * Number(l.unitPrice||0), 0);
+    const tax = sub * (Number(draft.taxRate||0)/100);
+    return { sub, tax, total: sub + tax + Number(draft.deliveryFee||0) };
+  }
+
+  function paint(){
+    const t = totals();
+    $('#sheetTitle').textContent = existing ? `Edit ${esc(existing.doc_no||'order')}`
+      : isQuote ? 'New enquiry' : 'New order';
+    $('#sheetBody').innerHTML = `
+      <form id="oForm">
+        <div class="field"><label for="oCust">Customer</label>
+          <select class="input" id="oCust">
+            <option value="">— choose —</option>
+            ${contacts.map(c => `<option value="${c.id}" ${draft.contactId===c.id?'selected':''}>${esc(c.name)}</option>`).join('')}
+          </select></div>
+        <div class="field"><label for="oDue">${isQuote ? 'Wanted for' : 'Due date'}</label>
+          <input class="input" id="oDue" type="date" value="${esc(draft.dueAt)}"></div>
+
+        <label>Items</label>
+        <div id="oLines" class="stack" style="margin-bottom:var(--sp-3)">
+          ${draft.lines.map((l,i) => `
+            <div class="card pad" style="box-shadow:none">
+              <div class="field" style="margin-bottom:var(--sp-2)">
+                <select class="input" data-l="item" data-i="${i}">
+                  <option value="">Describe it yourself…</option>
+                  ${sellable.map(p => `<option value="${p.id}" ${l.itemId===p.id?'selected':''}>${esc(p.name)}</option>`).join('')}
+                </select></div>
+              <div class="field" style="margin-bottom:var(--sp-2)">
+                <input class="input" data-l="desc" data-i="${i}" placeholder="e.g. 3-tier, white and gold"
+                  value="${esc(l.description)}"></div>
+              <div class="row" style="gap:var(--sp-2)">
+                <input class="input" style="flex:1" data-l="qty" data-i="${i}" type="number" step="0.01" min="0"
+                  value="${l.qty}" placeholder="Qty">
+                <input class="input" style="flex:2" data-l="price" data-i="${i}" type="number" step="0.01" min="0"
+                  value="${l.unitPrice}" placeholder="Price each">
+                ${draft.lines.length > 1 ? `<button type="button" class="btn btn-ghost btn-sm" data-rm="${i}">✕</button>` : ''}
+              </div>
+            </div>`).join('')}
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm btn-block" id="oAdd" style="margin-bottom:var(--sp-4)">+ Add item</button>
+
+        <div class="row" style="gap:var(--sp-2)">
+          <div class="field" style="flex:1"><label for="oTax">Tax %</label>
+            <input class="input" id="oTax" type="number" step="0.1" min="0" value="${draft.taxRate}"></div>
+          <div class="field" style="flex:1"><label for="oDel">Delivery</label>
+            <input class="input" id="oDel" type="number" step="0.01" min="0" value="${draft.deliveryFee}"></div>
+        </div>
+        ${isQuote || existing ? '' : `<div class="field"><label for="oDep">Deposit received now</label>
+          <input class="input" id="oDep" type="number" step="0.01" min="0" value="${draft.deposit}"></div>`}
+        <div class="field"><label for="oNotes">Notes</label>
+          <textarea class="input" id="oNotes" rows="2">${esc(draft.notes)}</textarea></div>
+
+        <div class="card pad" style="box-shadow:none;background:var(--bg);margin-bottom:var(--sp-4)">
+          <div class="kv"><span class="muted sm">Subtotal</span><span class="money">${money(t.sub)}</span></div>
+          <div class="kv"><span class="muted sm">Tax</span><span class="money">${money(t.tax)}</span></div>
+          <div class="kv"><span class="sm" style="font-weight:600">Total</span><span class="money">${money(t.total)}</span></div>
+        </div>
+
+        <div class="row"><button type="button" class="btn btn-ghost" id="oCancel">Cancel</button>
+          <button class="btn btn-primary" style="flex:1" type="submit">
+            ${existing ? 'Save changes' : isQuote ? 'Save enquiry' : 'Create order'}</button></div>
+      </form>`;
+
+    const read = () => {
+      draft.contactId = $('#oCust').value;
+      draft.dueAt = $('#oDue').value;
+      draft.taxRate = Number($('#oTax').value) || 0;
+      draft.deliveryFee = Number($('#oDel').value) || 0;
+      draft.notes = $('#oNotes').value;
+      const dep = $('#oDep'); if (dep) draft.deposit = Number(dep.value) || 0;
+      $$('[data-l]').forEach(el => {
+        const i = Number(el.dataset.i), k = el.dataset.l;
+        if (k === 'item'){
+          draft.lines[i].itemId = el.value;
+          const prod = sellable.find(p => p.id === el.value);
+          if (prod && !draft.lines[i].description) draft.lines[i].description = prod.name;
+          if (prod && !Number(draft.lines[i].unitPrice)) draft.lines[i].unitPrice = Number(prod.sales_price);
+        }
+        else if (k === 'desc')  draft.lines[i].description = el.value;
+        else if (k === 'qty')   draft.lines[i].qty = Number(el.value) || 0;
+        else if (k === 'price') draft.lines[i].unitPrice = Number(el.value) || 0;
+      });
+    };
+    $$('[data-l]').forEach(el => el.onchange = () => { read(); paint(); });
+    $('#oAdd').onclick = () => { read(); draft.lines.push({itemId:'',description:'',qty:1,unitPrice:0}); paint(); };
+    $$('[data-rm]').forEach(b => b.onclick = () => { read(); draft.lines.splice(Number(b.dataset.rm),1); paint(); });
+    $('#oCancel').onclick = closeAll;
+
+    $('#oForm').onsubmit = async e => {
+      e.preventDefault();
+      read();
+      if (!draft.lines.some(l => l.description || l.itemId))
+        return toast('Add at least one item', true);
+      const btn = e.target.querySelector('[type=submit]');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      try {
+        if (existing){
+          await db.updateOrder(existing.id, {
+            contact_id: draft.contactId || null,
+            due_at: draft.dueAt ? new Date(draft.dueAt).toISOString() : null,
+            tax_rate: draft.taxRate / 100, delivery_fee: draft.deliveryFee, notes: draft.notes });
+          await db.replaceOrderLines(existing.id, draft.lines);
+          closeAll(); invalidate(); toast('Order saved'); render();
+        } else {
+          const o = await db.createOrder(state.company.id, {
+            contactId: draft.contactId || null,
+            dueAt: draft.dueAt ? new Date(draft.dueAt).toISOString() : null,
+            taxRate: draft.taxRate / 100, deliveryFee: draft.deliveryFee, notes: draft.notes,
+            docType: isQuote ? 'quote' : 'sales_order',
+            status: isQuote ? 'quoted' : 'confirmed',
+            lines: draft.lines, deposit: draft.deposit });
+          closeAll(); invalidate(); toast(isQuote ? 'Enquiry saved' : 'Order created');
+          go('#/order/' + o.id);
+        }
+      } catch (err) {
+        btn.disabled = false; btn.textContent = 'Try again';
+        toast(err.message || 'Could not save', true);
+      }
+    };
+  }
+  paint();
+  $('#sheet').classList.add('open'); $('#scrim').classList.add('open');
+}
+
+async function sheetExpense(){
+  const accounts = await cached('expAccounts', () => db.expenseAccounts());
+  $('#sheetTitle').textContent = 'Record an expense';
+  $('#sheetBody').innerHTML = `
+    <form id="eForm">
+      <div class="field"><label for="eMemo">What was it for</label>
+        <input class="input" id="eMemo" required placeholder="Bag of flour"></div>
+      <div class="field"><label for="eAcct">Category</label>
+        <select class="input" id="eAcct">${accounts.map(a =>
+          `<option value="${esc(a.code)}">${esc(a.name)}</option>`).join('')}</select></div>
+      <div class="field"><label for="eAmt">Amount</label>
+        <input class="input" id="eAmt" type="number" step="0.01" min="0.01" required></div>
+      <div class="field"><label for="eDate">Date</label>
+        <input class="input" id="eDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
+      <div class="row"><button type="button" class="btn btn-ghost" id="eCancel">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" type="submit">Record expense</button></div>
+    </form>`;
+  $('#eCancel').onclick = closeAll;
+  $('#eForm').onsubmit = async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]'); btn.disabled = true;
+    try {
+      await db.recordExpense(state.company.id, $('#eDate').value, $('#eMemo').value.trim(),
+        $('#eAcct').value, Number($('#eAmt').value));
+      closeAll(); invalidate(); toast('Expense recorded'); render();
+    } catch (err) { btn.disabled = false; toast(err.message || 'Could not record it', true); }
+  };
+  $('#sheet').classList.add('open'); $('#scrim').classList.add('open');
+}
+
+/* Finishing a job: the recipe proposes, reality decides. The two columns
+   are what it should have taken and what it actually took. */
+async function sheetProduction(job){
+  const recipes = await cached('recipes', () => db.recipes());
+  const recipe = recipes.find(r => r.id === (job.recipe?.id));
+  const locationId = await db.defaultLocation();
+  const rows = (recipe?.lines || []).map(l => ({
+    componentId: l.component?.id, name: l.component?.name, unit: l.unit || l.component?.unit || '',
+    unitCost: Number(l.component?.purchase_price || 0),
+    planned: Number(l.qty) * Number(job.qty_planned || 1),
+    qtyUsed: Number(l.qty) * Number(job.qty_planned || 1), qtyWasted: 0
+  }));
+
+  $('#sheetTitle').textContent = 'Finish ' + (job.item?.name || 'job');
+  $('#sheetBody').innerHTML = `
+    <form id="pdForm">
+      <div class="row" style="gap:var(--sp-2)">
+        <div class="field" style="flex:1"><label for="pdMade">Good units made</label>
+          <input class="input" id="pdMade" type="number" step="0.01" min="0" value="${job.qty_planned}"></div>
+        <div class="field" style="flex:1"><label for="pdSpoilt">Spoilt</label>
+          <input class="input" id="pdSpoilt" type="number" step="0.01" min="0" value="0"></div>
+      </div>
+      ${rows.length ? `<label>What it actually took</label>
+      <div class="stack" style="margin-bottom:var(--sp-4)">
+        ${rows.map((r,i) => `<div class="card pad" style="box-shadow:none">
+          <div class="between" style="margin-bottom:var(--sp-2)">
+            <strong class="sm">${esc(r.name)}</strong>
+            <span class="xs muted">recipe says ${qty(r.planned)} ${esc(r.unit)}</span></div>
+          <div class="row" style="gap:var(--sp-2)">
+            <input class="input" style="flex:1" data-u="${i}" type="number" step="0.001" min="0"
+              value="${r.qtyUsed}" placeholder="used">
+            <input class="input" style="flex:1" data-w="${i}" type="number" step="0.001" min="0"
+              value="0" placeholder="wasted">
+          </div></div>`).join('')}
+      </div>` : `<p class="sm muted">No recipe on this job, so only the output is recorded.</p>`}
+      <div class="row"><button type="button" class="btn btn-ghost" id="pdCancel">Cancel</button>
+        <button class="btn btn-primary" style="flex:1" type="submit">Finish job</button></div>
+    </form>`;
+  $('#pdCancel').onclick = closeAll;
+  $('#pdForm').onsubmit = async e => {
+    e.preventDefault();
+    const btn = e.target.querySelector('[type=submit]'); btn.disabled = true; btn.textContent = 'Saving…';
+    rows.forEach((r,i) => {
+      const u = document.querySelector(`[data-u="${i}"]`), w = document.querySelector(`[data-w="${i}"]`);
+      r.qtyUsed = u ? Number(u.value) || 0 : 0;
+      r.qtyWasted = w ? Number(w.value) || 0 : 0;
+    });
+    try {
+      await db.completeProduction(state.company.id, job.id, {
+        produced: Number($('#pdMade').value) || 0,
+        wasted: Number($('#pdSpoilt').value) || 0,
+        consumption: rows, locationId, itemId: job.item?.id });
+      closeAll(); invalidate(); toast('Job finished, stock updated'); render();
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Try again';
+      toast(err.message || 'Could not save', true);
+    }
+  };
+  $('#sheet').classList.add('open'); $('#scrim').classList.add('open');
+}
+
+/* A printable invoice. Opens a clean window and prints it — no library,
+   nothing to install, works on a phone. */
+function printInvoice(o){
+  const w = window.open('', '_blank');
+  if (!w) return toast('Allow pop-ups to print', true);
+  const lines = (o.lines || []).map(l => `<tr>
+    <td>${esc(l.description || l.item?.name || '')}</td>
+    <td class="n">${qty(l.qty)}</td>
+    <td class="n">${money(l.unit_price)}</td>
+    <td class="n">${money(Number(l.qty)*Number(l.unit_price))}</td></tr>`).join('');
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8">
+    <title>${esc(o.doc_no || 'Invoice')}</title><style>
+    body{font:14px -apple-system,Segoe UI,Roboto,sans-serif;color:#111;padding:28px;max-width:720px;margin:auto}
+    h1{font-size:20px;margin:0 0 2px} .muted{color:#666;font-size:12px}
+    .head{display:flex;justify-content:space-between;border-bottom:2px solid #111;padding-bottom:12px}
+    table{width:100%;border-collapse:collapse;margin-top:18px}
+    th{text-align:left;font-size:11px;text-transform:uppercase;color:#666;border-bottom:1px solid #ccc;padding:7px 6px}
+    td{padding:8px 6px;border-bottom:1px solid #eee} .n{text-align:right}
+    .tot{margin-left:auto;width:270px;margin-top:16px}
+    .tot div{display:flex;justify-content:space-between;padding:4px 0}
+    .grand{border-top:1px solid #111;font-weight:700;font-size:16px;padding-top:6px}
+    .foot{margin-top:36px;border-top:1px solid #ccc;padding-top:8px;color:#555;font-size:11px}
+    @media print{body{padding:0}}</style></head><body>
+    <div class="head"><div><h1>${esc(state.company.name)}</h1>
+      <div class="muted">${esc(o.doc_type === 'quote' ? 'Quotation' : 'Invoice')} ${esc(o.doc_no||'')}</div>
+      <div class="muted">Date: ${esc(dueLabel(o.due_at))}</div></div>
+      <div style="text-align:right"><strong>Bill to</strong>
+        <div>${esc(o.contact?.name || o.contact_name || '')}</div>
+        <div class="muted">${esc(o.contact?.phone || '')}</div></div></div>
+    <table><thead><tr><th>Item</th><th class="n">Qty</th><th class="n">Price</th><th class="n">Amount</th></tr></thead>
+      <tbody>${lines}</tbody></table>
+    <div class="tot">
+      <div><span>Subtotal</span><span>${money(o.subtotal)}</span></div>
+      <div><span>Tax</span><span>${money(o.tax)}</span></div>
+      ${Number(o.delivery_fee) ? `<div><span>Delivery</span><span>${money(o.delivery_fee)}</span></div>` : ''}
+      <div class="grand"><span>Total</span><span>${money(o.total)}</span></div>
+      ${o.paid ? `<div><span>Paid</span><span>${money(o.paid)}</span></div>
+        <div class="grand"><span>Balance due</span><span>${money(o.balance)}</span></div>` : ''}
+    </div>
+    <div class="foot">Thank you for your business.</div>
+    <script>window.onload=function(){window.print()}<\/script></body></html>`);
+  w.document.close();
+}
+
 /* ---------------------------- cache ---------------------------- */
 async function cached(key, fn){
   if (!state.cache[key]) state.cache[key] = await fn();
@@ -289,6 +576,55 @@ function bindView(){
     } catch (err) { toast(err.message || 'Could not update', true); el.disabled = false; }
   });
   const back = $('#backBtn'); if (back) back.onclick = () => go('#/orders');
+
+  const nq = $('[data-new-quote]'); if (nq) nq.onclick = () => sheetOrder('quote');
+  const no = $('[data-new-order]'); if (no) no.onclick = () => sheetOrder('sales_order');
+
+  $$('[data-edit-order]').forEach(el => el.onclick = async () => {
+    const o = await db.order(el.dataset.editOrder);
+    if (o) sheetOrder(o.doc_type, o);
+  });
+  $$('[data-print-order]').forEach(el => el.onclick = async () => {
+    const o = await db.order(el.dataset.printOrder);
+    if (o) printInvoice(o);
+  });
+  $$('[data-convert]').forEach(el => el.onclick = async () => {
+    const o = await db.order(el.dataset.convert);
+    if (!o) return;
+    $('#sheetTitle').textContent = 'Convert to an order';
+    $('#sheetBody').innerHTML = `
+      <p class="sm muted">${esc(o.contact?.name || 'This customer')} has agreed.
+        It gets an order number and a place in production.</p>
+      <form id="cvForm">
+        <div class="field"><label for="cvDep">Deposit received now</label>
+          <input class="input" id="cvDep" type="number" step="0.01" min="0"
+            value="${Math.round(o.total * 0.5)}"></div>
+        <div class="row"><button type="button" class="btn btn-ghost" id="cvCancel">Cancel</button>
+          <button class="btn btn-primary" style="flex:1" type="submit">Convert</button></div>
+      </form>`;
+    $('#cvCancel').onclick = closeAll;
+    $('#cvForm').onsubmit = async ev => {
+      ev.preventDefault();
+      const btn = ev.target.querySelector('[type=submit]'); btn.disabled = true;
+      try {
+        await db.convertQuoteToOrder(state.company.id, o.id,
+          Number($('#cvDep').value) || 0, o.contact?.id || null);
+        closeAll(); invalidate(); toast('Now an order'); render();
+      } catch (err) { btn.disabled = false; toast(err.message || 'Could not convert', true); }
+    };
+    $('#sheet').classList.add('open'); $('#scrim').classList.add('open');
+  });
+
+  $$('[data-start-job]').forEach(el => el.onclick = async () => {
+    el.disabled = true;
+    try { await db.startProduction(el.dataset.startJob); invalidate(); toast('Started'); render(); }
+    catch (err) { el.disabled = false; toast(err.message || 'Could not start', true); }
+  });
+  $$('[data-finish-job]').forEach(el => el.onclick = async () => {
+    const jobs = await cached('jobs', () => db.productionJobs());
+    const job = jobs.find(j => j.id === el.dataset.finishJob);
+    if (job) sheetProduction(job);
+  });
 }
 
 /* ---------------------------- screens ---------------------------- */
@@ -422,11 +758,18 @@ async function viewCalendar(){
   <div class="between" style="margin:var(--sp-5) 0 var(--sp-3)"><h2 style="font-size:var(--fs-h2)">Today's jobs</h2></div>
   <div class="stack">
     ${todays.length ? todays.map(j => `
-      <div class="card pad between">
-        <div><div class="xs muted">${esc(j.recipe?.name || 'No recipe')}</div>
-          <div style="font-weight:600;color:var(--heading)" class="sm">${esc(j.item?.name || '—')}</div>
-          <div class="xs muted">${qty(j.qty_planned)} planned</div></div>
-        ${statusChip(j.status === 'in_progress' ? 'in_production' : j.status === 'done' ? 'delivered' : 'confirmed')}
+      <div class="card pad">
+        <div class="between">
+          <div><div class="xs muted">${esc(j.recipe?.name || 'No recipe')}</div>
+            <div style="font-weight:600;color:var(--heading)" class="sm">${esc(j.item?.name || '—')}</div>
+            <div class="xs muted">${qty(j.qty_planned)} planned${
+              j.status === 'done' ? ` · ${qty(j.qty_produced)} made` : ''}</div></div>
+          ${statusChip(j.status === 'in_progress' ? 'in_production' : j.status === 'done' ? 'delivered' : 'confirmed')}
+        </div>
+        ${j.status === 'done' ? '' : `<div class="row" style="margin-top:var(--sp-3)">
+          ${j.status === 'planned'
+            ? `<button class="btn btn-secondary btn-sm" data-start-job="${j.id}">Start baking</button>` : ''}
+          <button class="btn btn-primary btn-sm" data-finish-job="${j.id}">Finish job</button></div>`}
       </div>`).join('')
       : `<div class="card"><div class="empty">Nothing to bake today.</div></div>`}
   </div>`;
@@ -439,7 +782,10 @@ async function viewOrders(){
   const live = orders.filter(o => o.doc_type !== 'quote');
   return `
   <div class="page-head"><div><h1>Orders &amp; Enquiries</h1>
-    <div class="page-sub">A quote becomes an order once the deposit lands.</div></div></div>
+    <div class="page-sub">A quote becomes an order once the deposit lands.</div></div>
+    <div class="spacer"></div>
+    <div class="row"><button class="btn btn-ghost btn-sm" data-new-quote>+ Enquiry</button>
+      <button class="btn btn-primary btn-sm" data-new-order>+ New order</button></div></div>
   ${quotes.length ? `<h2 style="font-size:var(--fs-h2);margin-bottom:var(--sp-3)">Open quotes</h2>
     <div class="stack" style="margin-bottom:var(--sp-5)">${quotes.map(orderRow).join('')}</div>` : ''}
   <h2 style="font-size:var(--fs-h2);margin-bottom:var(--sp-3)">Orders</h2>
@@ -457,7 +803,14 @@ async function viewOrder(){
   return `
   <div class="page-head"><div><h1>${esc(o.doc_no || 'Order')}</h1>
     <div class="page-sub">${esc(o.contact?.name || 'Walk-in')} · due ${esc(dueLabel(o.due_at))}</div></div>
-    <div class="spacer"></div><button class="btn btn-ghost btn-sm" id="backBtn">← All orders</button></div>
+    <div class="spacer"></div>
+    <div class="row">
+      <button class="btn btn-ghost btn-sm" id="backBtn">← All orders</button>
+      <button class="btn btn-ghost btn-sm" data-print-order="${o.id}">Print</button>
+      <button class="btn btn-secondary btn-sm" data-edit-order="${o.id}">Edit</button>
+      ${o.doc_type === 'quote'
+        ? `<button class="btn btn-primary btn-sm" data-convert="${o.id}">Convert to order</button>` : ''}
+    </div></div>
 
   ${idx >= 0 ? `<div class="card pad">
     <div class="stepper">${PHASES.map((p,i) => `
