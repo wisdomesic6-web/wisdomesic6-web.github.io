@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+h1,h2,h3{margin:0;color:var(--heading)}
+a{color:inherit;text-decoration:none}
+.hidden{display:none !important}
+
+/* ============ shell ============ */
+.shell{display:grid;min-height:100vh;grid-template-columns:248px 1fr;
+  grid-template-rows:auto 1fr;grid-template-areas:"side top" "side main"}
+.sidebar{grid-area:side;background:var(--sidebar);color:var(--sidebar-text);
+  padding:var(--sp-5) var(--sp-3);display:flex;flex-direction:column;gap:var(--sp-1)}
+.sb-brand{display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-2) var(--sp-5)}
+.sb-mark{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);
+  display:grid;place-items:center;color:#fff;font-weight:var(--fw-bold);flex:none}
+.sb-name{color:#fff;font-weight:var(--fw-semibold);font-size:var(--fs-sm);line-height:1.15}
+.sb-tag{font-size:10px;opacity:.65;line-height:1.3}
+.sb-item{display:flex;align-items:center;gap:var(--sp-3);padding:10px var(--sp-3);
+  border-radius:var(--r-sm);font-size:var(--fs-sm);font-weight:var(--fw-medium);cursor:pointer}
+.sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.sb-item.active{background:var(--sidebar-active-bg);color:#fff;font-weight:var(--fw-semibold)}
+.sb-ico{width:18px;text-align:center;opacity:.9}
+.sb-foot{margin-top:auto;border-top:1px solid rgba(255,255,255,.1);padding-top:var(--sp-3)}
+
+.topbar{grid-area:top;background:var(--surface);border-bottom:1px solid var(--line);
+  padding:var(--sp-3) var(--sp-5);display:flex;align-items:center;gap:var(--sp-4);
+  position:sticky;top:0;z-index:20}
+.search{flex:1;max-width:420px;position:relative}
+.search input{width:100%;height:40px;border:1px solid var(--line);border-radius:var(--r-pill);
+  background:var(--bg);padding:0 var(--sp-4) 0 38px;outline:none}
+.search input:focus{border-color:var(--primary)}
+.search .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.spacer{flex:1}
+.who{display:flex;align-items:center;gap:var(--sp-2)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--green-600);color:#fff;
+  display:grid;place-items:center;font-size:12px;font-weight:var(--fw-semibold);flex:none}
+.who-name{font-size:var(--fs-sm);font-weight:var(--fw-semibold);line-height:1.1}
+.who-role{font-size:var(--fs-xs);color:var(--muted);line-height:1.2}
+.role-pick{border:1px solid var(--line);border-radius:var(--r-pill);background:var(--bg);
+  height:34px;padding:0 var(--sp-3);font-size:var(--fs-sm)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:0;background:transparent;
+  display:grid;place-items:center;cursor:pointer;font-size:16px;flex:none}
+
+/* min-width:0 or the grid area refuses to shrink and wide children
+   (filter rows, tables) push the whole page sideways on a phone */
+.main{grid-area:main;padding:var(--sp-6);max-width:1280px;width:100%;min-width:0}
+.page-head{display:flex;align-items:flex-end;gap:var(--sp-4);flex-wrap:wrap;margin-bottom:var(--sp-5)}
+.page-head h1{font-size:var(--fs-h1);line-height:var(--lh-h1);font-weight:var(--fw-bold);letter-spacing:-.3px}
+.page-sub{color:var(--muted);font-size:var(--fs-sm);margin-top:3px}
+.bottom-nav{display:none}
+
+/* ============ phone ============ */
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr;grid-template-areas:"top" "main"}
+  .sidebar{display:none}
+  .topbar{padding:var(--sp-3) var(--sp-4)}
+  .search{max-width:none}
+  .who-name,.who-role,.role-label{display:none}
+  .main{padding:var(--sp-4) var(--sp-4) 96px}
+  /* every two-column layout stacks; the inline minmax() on the recipe
+     grid would otherwise demand ~620px on a 390px screen */
+  .grid2{grid-template-columns:1fr !important}
+  .bottom-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:30;
+    background:var(--surface);border-top:1px solid var(--line);
+    grid-template-columns:repeat(5,1fr);align-items:center;padding:var(--sp-2) 0 var(--sp-4)}
+  .nav-item{display:grid;justify-items:center;gap:3px;color:var(--muted);
+    font-size:9.5px;font-weight:var(--fw-semibold);cursor:pointer}
+  .nav-item.active{color:var(--primary)}
+  .nav-ico{font-size:17px;line-height:1}
+  .fab{width:50px;height:50px;border-radius:50%;background:var(--primary);color:#fff;
+    display:grid;place-items:center;font-size:24px;margin-top:-20px;border:0;cursor:pointer;
+    box-shadow:0 5px 14px rgba(15,81,50,.35);justify-self:center}
+}
+
+/* ============ pieces ============ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.pad{padding:var(--sp-4)}
+.stack{display:grid;gap:var(--sp-3)}
+.stack > *{min-width:0}
+.row{display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap}
+.between{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
+.muted{color:var(--muted)}
+.sm{font-size:var(--fs-sm)}
+.xs{font-size:var(--fs-xs)}
+.link{color:var(--positive);font-weight:var(--fw-semibold);cursor:pointer}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;margin:var(--sp-5) 0 var(--sp-3)}
+.section-head h2{font-size:var(--fs-h2);font-weight:var(--fw-semibold)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  min-height:var(--tap);padding:0 var(--sp-5);border-radius:var(--r-pill);border:1px solid transparent;
+  font-weight:var(--fw-semibold);cursor:pointer}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--primary);border-color:var(--primary)}
+.btn-ghost{background:transparent;border-color:var(--line)}
+.btn-block{width:100%}
+.btn-sm{min-height:36px;padding:0 var(--sp-4);font-size:var(--fs-sm)}
+
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:var(--r-pill);
+  font-size:var(--fs-xs);font-weight:var(--fw-semibold);white-space:nowrap}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip-paid{background:var(--paid-bg);color:var(--paid-fg)}
+.chip-pending{background:var(--pending-bg);color:var(--pending-fg)}
+.chip-overdue{background:var(--overdue-bg);color:var(--overdue-fg)}
+.chip-processing{background:var(--processing-bg);color:var(--processing-fg)}
+.chip-complete{background:var(--complete-bg);color:var(--complete-fg)}
+.chip-plain{background:var(--sand);color:var(--muted)}
+
+.money{font-variant-numeric:tabular-nums;font-weight:var(--fw-semibold);color:var(--heading)}
+.money-lg{font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-.5px}
+.neg{color:var(--negative)}
+.pos{color:var(--positive)}
+
+.filters{display:flex;gap:var(--sp-2);overflow-x:auto;padding-bottom:4px;margin-bottom:var(--sp-4)}
+.filter{border:1px solid var(--line);background:var(--surface);padding:8px 14px;
+  border-radius:var(--r-pill);font-size:var(--fs-sm);font-weight:var(--fw-medium);
+  white-space:nowrap;cursor:pointer}
+.filter.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+.segmented{display:grid;grid-template-columns:1fr 1fr;background:var(--sand);
+  border-radius:var(--r-pill);padding:3px;gap:3px}
+.segmented button{border:0;background:transparent;padding:9px 0;border-radius:var(--r-pill);
+  font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--muted);cursor:pointer}
+.segmented button.active{background:var(--primary);color:#fff}
+
+.progress{height:7px;border-radius:var(--r-pill);background:var(--sand);overflow:hidden}
+.progress > span{display:block;height:100%;background:var(--green-600)}
+
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:var(--sp-3)}
+.day{text-align:center;padding:var(--sp-2) 0;border-radius:var(--r-md);cursor:pointer}
+.day .dow{font-size:9px;color:var(--muted);font-weight:var(--fw-semibold);text-transform:uppercase}
+.day .dnum{font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--heading)}
+.day .dcap{font-size:8px;color:var(--muted);margin-top:1px}
+.day.sel{background:var(--primary)}
+.day.sel .dow,.day.sel .dnum,.day.sel .dcap{color:#fff}
+.day.full .dcap{color:var(--overdue-fg);font-weight:var(--fw-semibold)}
+
+.job{display:flex;gap:var(--sp-3);padding:var(--sp-3);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-md);align-items:center;min-width:0;cursor:pointer}
+.job-time{font-size:var(--fs-xs);color:var(--muted);font-weight:var(--fw-semibold);
+  width:56px;flex:none;font-variant-numeric:tabular-nums}
+.job-thumb{width:40px;height:40px;border-radius:var(--r-sm);flex:none;
+  background:linear-gradient(135deg,#8B5E3C,#5C3A21);display:grid;place-items:center;font-size:18px}
+.job-body{flex:1;min-width:0}
+.job-meta{display:flex;align-items:center;gap:var(--sp-2);justify-content:space-between}
+.job-meta .chip{flex:none}
+.job-cust{font-size:var(--fs-xs);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-name{font-weight:var(--fw-semibold);color:var(--heading);font-size:var(--fs-sm);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.job-qty{font-size:var(--fs-xs);color:var(--muted)}
+
+.order{padding:var(--sp-4);background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);cursor:pointer}
+.order-top{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-2)}
+.order-no{font-weight:var(--fw-bold);font-size:var(--fs-sm);color:var(--heading)}
+.order-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:var(--sp-3)}
+
+/* stepper — four fulfilment phases only */
+.stepper{display:flex;align-items:flex-start;padding:var(--sp-4) 0 var(--sp-2)}
+.step{flex:1;text-align:center;position:relative;min-width:0}
+.step::before{content:"";position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--line)}
+.step:first-child::before{display:none}
+.step.done::before,.step.now::before{background:var(--green-600)}
+.dot{width:26px;height:26px;border-radius:50%;margin:0 auto var(--sp-2);
+  display:grid;place-items:center;background:var(--sand);color:var(--muted);
+  font-size:12px;position:relative;z-index:1;border:2px solid var(--bg)}
+.step.done .dot{background:var(--green-600);color:#fff}
+.step.now .dot{background:var(--surface);color:var(--green-600);
+  box-shadow:0 0 0 2px var(--green-600) inset, 0 0 0 4px var(--teal-100)}
+.step .lbl{font-size:10px;font-weight:var(--fw-semibold);color:var(--muted);line-height:1.25}
+.step.done .lbl,.step.now .lbl{color:var(--heading)}
+.step .when{font-size:9px;color:var(--muted)}
+
+table{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+th{text-align:left;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.05em;
+  color:var(--muted);font-weight:var(--fw-semibold);padding:var(--sp-3) var(--sp-4);background:var(--sand)}
+td{padding:var(--sp-3) var(--sp-4);border-top:1px solid var(--line);font-size:var(--fs-sm)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+
+.kv{display:flex;justify-content:space-between;gap:var(--sp-4);padding:7px 0}
+.kv + .kv{border-top:1px solid var(--line)}
+.grand{border-top:2px solid var(--line);margin-top:var(--sp-2);padding-top:var(--sp-3);
+  font-size:var(--fs-h2);font-weight:var(--fw-bold)}
+
+.grid2{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+
+/* ---- drawer, scrim and the + sheet ---- */
+/* hidden on desktop, where the sidebar already shows the whole menu.
+   Written as a desktop override because this block sits after the
+   max-width media query, and at equal specificity the later rule wins. */
+@media (min-width:901px){ .burger{display:none} }
+.scrim{position:fixed;inset:0;background:rgba(10,20,16,.45);z-index:40;opacity:0;
+  pointer-events:none;transition:opacity .18s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(85vw,320px);z-index:50;
+  background:var(--surface);border-right:1px solid var(--line);
+  transform:translateX(-100%);transition:transform .22s ease;
+  display:flex;flex-direction:column;overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;gap:var(--sp-3);
+  padding:var(--sp-5) var(--sp-4);border-bottom:1px solid var(--line)}
+.drawer-nav{padding:var(--sp-3)}
+.drawer-item{display:flex;align-items:center;gap:var(--sp-3);padding:13px var(--sp-3);
+  border-radius:var(--r-sm);font-size:var(--fs-body);font-weight:var(--fw-medium);cursor:pointer}
+.drawer-item.active{background:var(--complete-bg);color:var(--complete-fg);font-weight:var(--fw-semibold)}
+.drawer-group{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em;
+  color:var(--muted);font-weight:var(--fw-semibold);padding:var(--sp-4) var(--sp-3) var(--sp-2)}
+
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;padding:var(--sp-3) var(--sp-4) var(--sp-6);
+  transform:translateY(110%);transition:transform .22s ease;box-shadow:var(--shadow-lg)}
+.sheet.open{transform:translateY(0)}
+.sheet-grip{width:40px;height:4px;border-radius:var(--r-pill);background:var(--line);margin:0 auto var(--sp-4)}
+.sheet-title{font-weight:var(--fw-bold);color:var(--heading);font-size:var(--fs-h2);margin-bottom:var(--sp-3)}
+.sheet-actions{display:grid;gap:var(--sp-2);margin-bottom:var(--sp-3)}
+.sheet-action{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-3);
+  border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;background:var(--surface);
+  text-align:left;min-height:var(--tap)}
+.sheet-action:hover{border-color:var(--primary)}
+.sa-ico{width:36px;height:36px;border-radius:var(--r-sm);display:grid;place-items:center;
+  background:var(--complete-bg);color:var(--complete-fg);font-size:16px;flex:none}
+.sa-name{font-weight:var(--fw-semibold);color:var(--heading);font-size:var(--fs-sm);line-height:1.2}
+.sa-why{font-size:var(--fs-xs);color:var(--muted);line-height:1.3}
+@media (min-width:901px){ .sheet{left:auto;right:var(--sp-6);bottom:var(--sp-6);
+  width:360px;border-radius:var(--r-lg)} }
+.banner{background:var(--pending-bg);color:var(--pending-fg);border-radius:var(--r-md);
+  padding:var(--sp-3) var(--sp-4);font-size:var(--fs-sm);font-weight:var(--fw-medium)}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-mark">◆</div>
+      <div><div class="sb-name">Grace's Treats</div><div class="sb-tag">Your Business, Simplified</div></div>
+    </div>
+    <div id="sbNav"></div>
+    <div class="sb-foot">
+      <div class="sb-item" onclick="go('#/settings')"><span class="sb-ico">⚙</span>Settings</div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <button class="icon-btn burger" onclick="openDrawer()" title="Menu">☰</button>
+    <div class="search"><span class="ico">⌕</span><input placeholder="Search anything…"></div>
+    <div class="spacer"></div>
+    <span class="xs muted role-label">Viewing as</span>
+    <select class="role-pick" id="rolePick" onchange="setRole(this.value)">
+      <option value="owner">Owner</option>
+      <option value="sales">Sales</option>
+      <option value="clerk">Clerk</option>
+    </select>
+    <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
+    <div class="who"><div class="avatar">A</div>
+      <div><div class="who-name">Ada Johnson</div><div class="who-role" id="whoRole">Owner</div></div></div>
+  </header>
+
+  <main class="main" id="view"></main>
+</div>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+
+<!-- Full menu. Opened from the ☰ at top-left, and from More in the bottom bar —
+     same content either way, so there is only one place to learn. -->
+<div class="scrim" id="scrim" onclick="closeAll()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="sb-mark" style="background:var(--primary)">◆</div>
+    <div><div class="sb-name" style="color:var(--heading)">Grace's Treats</div>
+      <div class="sb-tag muted">Ada Johnson · <span id="drawerRole">Owner</span></div></div>
+    <button class="icon-btn" style="margin-left:auto" onclick="closeAll()">✕</button>
+  </div>
+  <div id="drawerNav" class="drawer-nav"></div>
+</aside>
+
+<!-- The + sheet: the handful of things she creates all day -->
+<div class="sheet" id="sheet">
+  <div class="sheet-grip"></div>
+  <div class="sheet-title">Add new</div>
+  <div class="sheet-actions" id="sheetActions"></div>
+  <button class="btn btn-ghost btn-block" onclick="closeAll()">Cancel</button>
+</div>
+
+<script>
+"use strict";
+
+/* ===================================================================
+   Mock data. Shapes match the Supabase schema, so wiring this to the
+   live database later is a change of data source, not of screens.
+   =================================================================== */
+const money = n => '₦' + Number(n||0).toLocaleString('en-NG',{minimumFractionDigits:2,maximumFractionDigits:2});
+const money0 = n => '₦' + Math.round(Number(n||0)).toLocaleString('en-NG');
+const esc = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const DB = {
+  customers: [
+    {id:'c1', name:'Grace Johnson', phone:'+234 812 345 4567', whatsapp:'+234 812 345 4567'},
+    {id:'c2', name:"Tolu's Kitchen", phone:'+234 803 221 9087'},
+    {id:'c3', name:'Faith Events',  phone:'+234 701 554 2210'},
+    {id:'c4', name:'Mariam Stores', phone:'+234 814 009 7745'},
+    {id:'c5', name:'Amina Bello',   phone:'+234 909 110 2234'}
+  ],
+
+  /* Confirmed orders use the four-phase stepper. */
+  orders: [
+    {id:'ORD-1003', customer:'Grace Johnson', custId:'c1', item:'Chocolate Cake (2kg)', qty:2,
+     due:'Sat, 12 Oct 2024', phase:'in_production', total:350000, paid:200000,
+     address:'No 12, Adeyemi Street, Lagos', note:'Handle with care', emoji:'🍫',
+     timeline:{confirmed:'10 Oct', in_production:'12 Oct'},
+     payments:[{label:'Deposit', amount:200000, state:'Paid'}]},
+    {id:'ORD-1002', customer:"Tolu's Kitchen", custId:'c2', item:'Vanilla Cake (3kg)', qty:3,
+     due:'Fri, 11 Oct 2024', phase:'ready', total:360000, paid:240000,
+     address:'22 Allen Avenue, Ikeja', note:'Collect at 4pm', emoji:'🧁',
+     timeline:{confirmed:'8 Oct', in_production:'10 Oct', ready:'11 Oct'},
+     payments:[{label:'Deposit', amount:240000, state:'Paid'}]},
+    {id:'ORD-1001', customer:'Faith Events', custId:'c3', item:'Red Velvet Cake (2kg)', qty:4,
+     due:'Thu, 10 Oct 2024', phase:'delivered', total:336000, paid:336000,
+     address:'Victoria Island, Lagos', note:'', emoji:'🍰',
+     timeline:{confirmed:'5 Oct', in_production:'8 Oct', ready:'9 Oct', delivered:'10 Oct'},
+     payments:[{label:'Deposit', amount:150000, state:'Paid'},{label:'Balance', amount:186000, state:'Paid'}]},
+    {id:'ORD-1000', customer:'Mariam Stores', custId:'c4', item:'Cupcakes (dozen)', qty:5,
+     due:'Wed, 9 Oct 2024', phase:'delivered', total:275000, paid:275000,
+     address:'Surulere, Lagos', note:'', emoji:'🎂',
+     timeline:{confirmed:'3 Oct', in_production:'7 Oct', ready:'8 Oct', delivered:'9 Oct'},
+     payments:[{label:'Paid in full', amount:275000, state:'Paid'}]}
+  ],
+
+  /* An enquiry is NOT an order yet — it has its own lighter screen. */
+  enquiries: [
+    {id:'ENQ-0042', customer:'Amina Bello', custId:'c5', channel:'WhatsApp',
+     asked:'3 days ago', wants:'3-tier wedding cake, white and gold, "Tunde & Amina"',
+     when:'Sat, 26 Oct 2024', guests:'about 120 guests', budget:'asked for a price',
+     state:'quoted', quote:420000, lastContact:'Quote sent 2 days ago', stale:true,
+     message:'Good afternoon ma. I saw your page on Instagram. I need a 3 tier wedding cake for 26th October, white and gold theme. About 120 guests. How much please?'},
+    {id:'ENQ-0041', customer:'Chidi Okafor', custId:null, channel:'Instagram',
+     asked:'yesterday', wants:'Birthday cake, 1kg, chocolate', when:'Fri, 18 Oct 2024',
+     guests:'small family party', budget:'under ₦40,000',
+     state:'enquiry', quote:null, lastContact:'Not yet answered', stale:false,
+     message:'how much for a 1kg chocolate birthday cake for friday next week?'}
+  ],
+
+  jobs: [
+    {time:'08:00 AM', customer:"Grace's Treats", item:'Chocolate Cake (2kg)', qty:'2 units', state:'done',  emoji:'🍫'},
+    {time:'10:30 AM', customer:"Tolu's Kitchen", item:'Vanilla Cake (3kg)',   qty:'3 units', state:'done',  emoji:'🧁'},
+    {time:'01:00 PM', customer:'Faith Events',   item:'Red Velvet Cake (2kg)',qty:'4 units', state:'doing', emoji:'🍰'},
+    {time:'04:00 PM', customer:'Mariam Stores',  item:'Cupcakes (dozen)',     qty:'5 units', state:'late',  emoji:'🎂'}
+  ],
+
+  week: [
+    {dow:'Mon', n:7,  jobs:2, cap:5}, {dow:'Tue', n:8,  jobs:3, cap:5},
+    {dow:'Wed', n:9,  jobs:5, cap:5}, {dow:'Thu', n:10, jobs:4, cap:5},
+    {dow:'Fri', n:11, jobs:3, cap:5}, {dow:'Sat', n:12, jobs:5, cap:5},
+    {dow:'Sun', n:13, jobs:0, cap:5}
+  ],
+
+  /* Recipe costing — per unit, which is how she actually sells. */
+  recipe: {
+    product:'Chocolate Cake (2kg)', yield:2, sellingPricePerUnit:18000,
+    labourMinutes:90, labourRatePerHour:1000, overhead:1200,
+    ingredients:[
+      {name:'Flour',          qty:0.5,  unit:'kg',  unitCost:1200},
+      {name:'Sugar',          qty:0.35, unit:'kg',  unitCost:900},
+      {name:'Cocoa powder',   qty:0.2,  unit:'kg',  unitCost:6000},
+      {name:'Butter',         qty:0.2,  unit:'kg',  unitCost:4500},
+      {name:'Eggs',           qty:4,    unit:'pcs', unitCost:150},
+      {name:'Milk',           qty:0.25, unit:'L',   unitCost:1400},
+      {name:'Vanilla extract',qty:10,   unit:'ml',  unitCost:35}
+    ]
+  }
+};
+
+/* ---- the corrected recipe maths: everything resolves per unit ---- */
+function costRecipe(r){
+  const ingredients = r.ingredients.reduce((s,i)=> s + i.qty * i.unitCost, 0);
+  const labour   = (r.labourMinutes/60) * r.labourRatePerHour;
+  const batch    = ingredients + labour + r.overhead;
+  const perUnit  = batch / r.yield;                 // what ONE cake costs
+  const sell     = r.sellingPricePerUnit;           // what ONE cake sells for
+  const profit   = sell - perUnit;
+  const margin   = sell ? (profit / sell) * 100 : 0;
+  return {ingredients, labour, overhead:r.overhead, batch, perUnit, sell, profit, margin};
+}
+
+/* ===================================================================
+   Role-aware navigation. A clerk never opens the production calendar,
+   so they never get a tab for it.
+   =================================================================== */
+const SCREENS = {
+  home:      {label:'Home',      ico:'⌂', title:'Home'},
+  calendar:  {label:'Calendar',  ico:'▦', title:'Production Calendar'},
+  orders:    {label:'Orders',    ico:'❐', title:'Orders & Enquiries'},
+  customers: {label:'Customers', ico:'☺', title:'Customers'},
+  products:  {label:'Products',  ico:'▣', title:'Products & Stock'},
+  recipe:    {label:'Recipes',   ico:'✎', title:'Recipe'},
+  stock:     {label:'Stock',     ico:'⛁', title:'Stock movements'},
+  ledger:    {label:'Ledger',    ico:'≡', title:'Ledger'},
+  payments:  {label:'Payments',  ico:'₦', title:'Payments'},
+  reports:   {label:'Reports',   ico:'◫', title:'Reports'},
+  staff:     {label:'Staff',     ico:'♟', title:'Staff & payroll'},
+  settings:  {label:'Settings',  ico:'⚙', title:'Settings'},
+  more:      {label:'More',      ico:'⋯', title:'More'}
+};
+
+/* Home sits first, the + stays in the middle, and everything else lives
+   behind ☰ / More. A clerk never gets a production-calendar tab. */
+const NAV = {
+  owner: {bottom:['home','calendar','+','orders','more'],
+          side:['home','calendar','orders','customers','products','recipe','stock','ledger','reports','staff']},
+  sales: {bottom:['home','orders','+','customers','more'],
+          side:['home','orders','customers','products']},
+  clerk: {bottom:['home','ledger','+','payments','more'],
+          side:['home','ledger','payments','reports','products','stock']}
+};
+
+/* What the + actually does, per role — the few things each person
+   creates all day, reachable by thumb from anywhere. */
+const CREATE_ACTIONS = {
+  owner: [
+    {ico:'❐', name:'New order',          why:'A customer has confirmed and paid a deposit', go:'#/orders'},
+    {ico:'✉', name:'New enquiry',        why:'Someone asked a price on WhatsApp or Instagram', go:'#/orders'},
+    {ico:'₦', name:'Record a payment',   why:'Cash, transfer or POS just came in', go:'#/orders'},
+    {ico:'▦', name:'New production job', why:'Something to bake that is not tied to an order', go:'#/calendar'},
+    {ico:'↑', name:'Record an expense',  why:'You bought flour, fuel or packaging', go:'#/ledger'}
+  ],
+  sales: [
+    {ico:'❐', name:'New order',        why:'A customer has confirmed', go:'#/orders'},
+    {ico:'✉', name:'New enquiry',      why:'Someone asked for a price', go:'#/orders'},
+    {ico:'☺', name:'New customer',     why:'Somebody new is buying from you', go:'#/customers'}
+  ],
+  clerk: [
+    {ico:'₦', name:'Record a payment', why:'Money received against an invoice', go:'#/payments'},
+    {ico:'↑', name:'Record an expense',why:'Money the business spent', go:'#/ledger'},
+    {ico:'≡', name:'Ledger entry',     why:'Anything that is neither a sale nor a purchase', go:'#/ledger'}
+  ]
+};
+
+/* ---- drawer and sheet ---- */
+function openDrawer(){
+  document.getElementById('drawerRole').textContent = role[0].toUpperCase()+role.slice(1);
+  renderDrawer();
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('scrim').classList.add('open');
+}
+function openSheet(){
+  document.getElementById('sheetActions').innerHTML = CREATE_ACTIONS[role].map((a,i)=>`
+    <button class="sheet-action" onclick="doCreate(${i})">
+      <span class="sa-ico">${a.ico}</span>
+      <span><span class="sa-name">${esc(a.name)}</span><br><span class="sa-why">${esc(a.why)}</span></span>
+    </button>`).join('');
+  document.getElementById('sheet').classList.add('open');
+  document.getElementById('scrim').classList.add('open');
+}
+function doCreate(i){ const a = CREATE_ACTIONS[role][i]; closeAll(); go(a.go); }
+function closeAll(){
+  ['drawer','sheet','scrim'].forEach(id => document.getElementById(id).classList.remove('open'));
+}
+function renderDrawer(){
+  const main = NAV[role].side;
+  document.getElementById('drawerNav').innerHTML =
+    `<div class="drawer-group">Go to</div>` +
+    main.map(k=>`<div class="drawer-item ${current()===k?'active':''}"
+        onclick="closeAll();go('#/${k}')"><span class="sb-ico">${SCREENS[k].ico}</span>${SCREENS[k].label}</div>`).join('') +
+    `<div class="drawer-group">Admin</div>
+     <div class="drawer-item" onclick="closeAll();go('#/settings')"><span class="sb-ico">⚙</span>Settings</div>`;
+}
+
+let role = 'owner';
+function setRole(r){
+  role = r;
+  document.getElementById('whoRole').textContent = r[0].toUpperCase()+r.slice(1);
+  const allowed = NAV[role].side;
+  if (!allowed.includes(current()) && !['order','enquiry'].includes(current()))
+    location.hash = '#/' + allowed[0];
+  render();
+}
+
+function renderNav(){
+  document.getElementById('sbNav').innerHTML = NAV[role].side.map(k =>
+    `<div class="sb-item ${current()===k?'active':''}" onclick="go('#/${k}')">
+       <span class="sb-ico">${SCREENS[k].ico}</span>${SCREENS[k].label}</div>`).join('');
+
+  document.getElementById('bottomNav').innerHTML = NAV[role].bottom.map(k => {
+    if (k === '+')    return `<button class="fab" onclick="openSheet()" title="Add new">+</button>`;
+    if (k === 'more') return `<div class="nav-item" onclick="openDrawer()">
+                                <span class="nav-ico">⋯</span>More</div>`;
+    return `<div class="nav-item ${current()===k?'active':''}" onclick="go('#/${k}')">
+              <span class="nav-ico">${SCREENS[k].ico}</span>${SCREENS[k].label}</div>`;
+  }).join('');
+}
+
+/* ============ routing ============ */
+function go(h){ location.hash = h; }
+function current(){ return (location.hash.replace('#/','').split('/')[0]) || 'home'; }
+function param(){ return location.hash.split('/')[2] || ''; }
+
+function render(){
+  renderNav();
+  const v = document.getElementById('view');
+  const screen = current();
+  const fn = ({
+    home: viewHome, dashboard: viewHome,
+    calendar: viewCalendar, orders: viewOrders, order: viewOrder, enquiry: viewEnquiry,
+    recipe: viewRecipe
+  })[screen];
+  v.innerHTML = fn ? fn() : placeholder(SCREENS[screen] ? SCREENS[screen].title : 'Coming soon');
+  window.scrollTo({top:0});
+}
+function placeholder(t){
+  return `<div class="page-head"><h1>${esc(t)}</h1></div>
+    <div class="card pad muted">This screen is in the brief and comes next. The shell, navigation
+    and design system around it are already real.</div>`;
+}
+
+/* ============ calendar ============ */
+function viewCalendar(){
+  const done = DB.jobs.filter(j=>j.state==='done').length;
+  const sat = DB.week.find(d=>d.n===12);
+  return `
+  <div class="page-head"><div><h1>Production Calendar</h1>
+    <div class="page-sub">What is due, and whether you can take more work.</div></div></div>
+
+  <div class="card pad">
+    <div class="between"><strong class="sm">Today, Sat 12 Oct 2024</strong>
+      <span class="link sm">${done} of ${DB.jobs.length} jobs ›</span></div>
+    <div class="progress" style="margin:var(--sp-3) 0 var(--sp-2)">
+      <span style="width:${done/DB.jobs.length*100}%"></span></div>
+    <div class="between xs muted"><span>${done} completed · ${DB.jobs.length-done} pending</span>
+      <span>${sat.jobs>=sat.cap?'<strong style="color:var(--overdue-fg)">Day is full</strong>':'Capacity '+sat.cap+'/day'}</span></div>
+  </div>
+
+  <div class="segmented" style="margin-top:var(--sp-4)">
+    <button class="active">Week</button><button>Month</button></div>
+
+  <div class="week">${DB.week.map(d=>`
+    <div class="day ${d.n===12?'sel':''} ${d.jobs>=d.cap?'full':''}">
+      <div class="dow">${d.dow}</div><div class="dnum">${d.n}</div>
+      <div class="dcap">${d.jobs}/${d.cap}</div></div>`).join('')}</div>
+
+  <div class="section-head"><h2>Today's Production Jobs</h2></div>
+  <div class="stack">${DB.jobs.map(j=>`
+    <div class="job">
+      <div class="job-time">${j.time}</div>
+      <div class="job-thumb">${j.emoji}</div>
+      <div class="job-body">
+        <div class="job-meta"><span class="job-cust">${esc(j.customer)}</span>
+          ${j.state==='done'?'<span class="chip chip-paid">Completed</span>'
+           :j.state==='doing'?'<span class="chip chip-pending">In Progress</span>'
+           :'<span class="chip chip-overdue">Overdue</span>'}</div>
+        <div class="job-name">${esc(j.item)}</div>
+        <div class="job-qty">${j.qty}</div>
+      </div>
+    </div>`).join('')}</div>
+
+  <button class="btn btn-primary btn-block" style="margin-top:var(--sp-5)">⊕ New Production Job</button>`;
+}
+
+/* ============ orders + enquiries ============ */
+let orderFilter = 'all';
+function setFilter(f){ orderFilter = f; render(); }
+
+function viewOrders(){
+  const enq = DB.enquiries;
+  const ord = DB.orders;
+  const counts = {all:enq.length+ord.length, enquiries:enq.length,
+    production:ord.filter(o=>o.phase==='in_production').length,
+    ready:ord.filter(o=>o.phase==='ready').length,
+    delivered:ord.filter(o=>o.phase==='delivered').length};
+
+  const showEnq = orderFilter==='all' || orderFilter==='enquiries';
+  const shownOrders = ord.filter(o =>
+      orderFilter==='all' ? true
+    : orderFilter==='production' ? o.phase==='in_production'
+    : orderFilter==='ready' ? o.phase==='ready'
+    : orderFilter==='delivered' ? o.phase==='delivered' : false);
+
+  const stale = enq.filter(e=>e.stale).length;
+
+  return `
+  <div class="page-head"><div><h1>Orders &amp; Enquiries</h1>
+    <div class="page-sub">An enquiry becomes an order once the deposit lands.</div></div></div>
+
+  ${stale ? `<div class="banner" style="margin-bottom:var(--sp-4)">
+      ${stale} quote has gone quiet for more than 2 days. Chasing it is usually worth more than a new advert.</div>`:''}
+
+  <div class="filters">
+    <button class="filter ${orderFilter==='all'?'active':''}" onclick="setFilter('all')">All (${counts.all})</button>
+    <button class="filter ${orderFilter==='enquiries'?'active':''}" onclick="setFilter('enquiries')">Enquiries (${counts.enquiries})</button>
+    <button class="filter ${orderFilter==='production'?'active':''}" onclick="setFilter('production')">In Production (${counts.production})</button>
+    <button class="filter ${orderFilter==='ready'?'active':''}" onclick="setFilter('ready')">Ready (${counts.ready})</button>
+    <button class="filter ${orderFilter==='delivered'?'active':''}" onclick="setFilter('delivered')">Delivered (${counts.delivered})</button>
+  </div>
+
+  <div class="stack">
+    ${showEnq ? enq.map(e=>`
+      <div class="order" onclick="go('#/enquiry/${e.id}')" style="border-left:3px solid var(--teal-500)">
+        <div class="order-top"><span class="order-no">${e.id}</span>
+          ${e.state==='quoted'?'<span class="chip chip-pending">Quoted</span>'
+                              :'<span class="chip chip-plain">New enquiry</span>'}</div>
+        <div class="sm" style="font-weight:var(--fw-medium);color:var(--heading)">${esc(e.customer)}</div>
+        <div class="xs muted" style="margin-top:2px">${esc(e.wants)}</div>
+        <div class="order-foot">
+          <div><div class="xs muted">Wants it ${esc(e.when)}</div>
+            <div class="xs ${e.stale?'neg':'muted'}" style="font-weight:${e.stale?600:400}">
+              via ${esc(e.channel)} · ${esc(e.lastContact)}</div></div>
+          <div class="money">${e.quote?money0(e.quote):'<span class="muted sm">no price yet</span>'}</div>
+        </div>
+      </div>`).join('') : ''}
+
+    ${shownOrders.map(o=>{
+      const bal = o.total - o.paid;
+      return `<div class="order" onclick="go('#/order/${o.id}')">
+        <div class="order-top"><span class="order-no">#${o.id}</span>${phaseChip(o.phase)}</div>
+        <div class="sm" style="font-weight:var(--fw-medium);color:var(--heading)">${esc(o.customer)}</div>
+        <div class="xs muted" style="margin-top:2px">${esc(o.item)} · ${o.qty} units</div>
+        <div class="order-foot">
+          <div><div class="xs muted">${esc(o.due)}</div>
+            ${bal>0?`<div class="xs neg" style="font-weight:600">Outstanding ${money(bal)}</div>`
+                   :`<div class="xs pos" style="font-weight:600">Paid in full</div>`}</div>
+          <div class="money">${money(o.total)}</div>
+        </div></div>`;
+    }).join('')}
+  </div>`;
+}
+
+const PHASES = [
+  {key:'confirmed',     label:'Confirmed'},
+  {key:'in_production', label:'In Production'},
+  {key:'ready',         label:'Ready'},
+  {key:'delivered',     label:'Delivered'}
+];
+function phaseChip(p){
+  return p==='in_production' ? '<span class="chip chip-processing">In Production</span>'
+       : p==='ready'         ? '<span class="chip chip-pending">Ready</span>'
+       : p==='delivered'     ? '<span class="chip chip-paid">Delivered</span>'
+       : '<span class="chip chip-plain">Confirmed</span>';
+}
+
+function viewOrder(){
+  const o = DB.orders.find(x=>x.id===param());
+  if (!o) return placeholder('Order not found');
+  const bal = o.total - o.paid;
+  const idx = PHASES.findIndex(p=>p.key===o.phase);
+  const next = PHASES[idx+1];
+
+  return `
+  <div class="page-head">
+    <div><h1>Order #${esc(o.id)}</h1>
+      <div class="page-sub">${esc(o.customer)} · due ${esc(o.due)}</div></div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost btn-sm" onclick="go('#/orders')">← All orders</button>
+  </div>
+
+  <div class="card pad">
+    <div class="stepper">${PHASES.map((p,i)=>`
+      <div class="step ${i<idx?'done':i===idx?'now':''}">
+        <div class="dot">${i<idx?'✓':i+1}</div>
+        <div class="lbl">${p.label}</div>
+        <div class="when">${o.timeline[p.key]||''}</div>
+      </div>`).join('')}</div>
+    ${next?`<button class="btn btn-primary btn-block" style="margin-top:var(--sp-3)">
+        Mark as ${next.label}</button>`:
+      `<div class="banner" style="background:var(--paid-bg);color:var(--paid-fg)">Delivered and closed.</div>`}
+  </div>
+
+  <div class="grid2" style="margin-top:var(--sp-4)">
+    <div class="card pad">
+      <div class="between" style="margin-bottom:var(--sp-3)">
+        <span class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600">
+          ${bal>0?'Outstanding balance':'Fully paid'}</span>
+        ${bal>0?'<span class="chip chip-overdue">Due tomorrow</span>':'<span class="chip chip-paid">Settled</span>'}
+      </div>
+      <div class="money money-lg ${bal>0?'neg':'pos'}">${money(bal>0?bal:o.total)}</div>
+      <div style="margin-top:var(--sp-4)">
+        <div class="kv"><span class="muted sm">Total</span><span class="money">${money(o.total)}</span></div>
+        <div class="kv"><span class="muted sm">Deposit received</span><span class="money">${money(o.paid)}</span></div>
+        <div class="kv"><span class="muted sm">Remaining</span><span class="money ${bal>0?'neg':''}">${money(bal)}</span></div>
+      </div>
+      <div class="row" style="margin-top:var(--sp-4)">
+        ${bal>0?'<button class="btn btn-primary" style="flex:1">Make Payment</button>':''}
+        <button class="btn btn-secondary" style="flex:1">Send Invoice</button>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:var(--sp-3)">Order items</div>
+      <div class="job" style="cursor:default">
+        <div class="job-thumb">${o.emoji}</div>
+        <div class="job-body">
+          <div class="job-name">${esc(o.item)}</div>
+          <div class="job-qty">× ${o.qty} · <span class="link" onclick="go('#/recipe')">View recipe</span></div>
+        </div>
+        <span class="money">${money(o.total)}</span>
+      </div>
+
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin:var(--sp-5) 0 var(--sp-2)">Delivery</div>
+      <div class="kv"><span class="muted sm">Date</span><span class="sm">${esc(o.due)}</span></div>
+      <div class="kv"><span class="muted sm">Address</span><span class="sm" style="text-align:right">${esc(o.address)}</span></div>
+      ${o.note?`<div class="kv"><span class="muted sm">Note</span><span class="sm">${esc(o.note)}</span></div>`:''}
+
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin:var(--sp-5) 0 var(--sp-2)">Payment history</div>
+      ${o.payments.map(p=>`<div class="kv"><span class="sm">${esc(p.label)}</span>
+        <span><span class="money">${money(p.amount)}</span>
+        <span class="chip chip-paid" style="margin-left:8px">${esc(p.state)}</span></span></div>`).join('')}
+      ${bal>0?`<div class="kv"><span class="sm">Balance</span>
+        <span><span class="money neg">${money(bal)}</span>
+        <span class="chip chip-pending" style="margin-left:8px">Pending</span></span></div>`:''}
+    </div>
+  </div>`;
+}
+
+/* ============ enquiry — the pre-order screen ============ */
+function viewEnquiry(){
+  const e = DB.enquiries.find(x=>x.id===param());
+  if (!e) return placeholder('Enquiry not found');
+  return `
+  <div class="page-head">
+    <div><h1>${esc(e.id)}</h1>
+      <div class="page-sub">${esc(e.customer)} · came in on ${esc(e.channel)} ${esc(e.asked)}</div></div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost btn-sm" onclick="go('#/orders')">← All orders</button>
+  </div>
+
+  ${e.stale?`<div class="banner" style="margin-bottom:var(--sp-4)">
+     Quoted ${esc(e.lastContact.toLowerCase())} with no reply. A follow-up now is the cheapest sale you will make today.</div>`:''}
+
+  <div class="grid2">
+    <div class="card pad">
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:var(--sp-2)">
+        What they sent</div>
+      <div style="background:var(--bg);border-radius:var(--r-md);padding:var(--sp-3);
+                  border-left:3px solid var(--teal-500);font-size:var(--fs-sm)">
+        “${esc(e.message)}”</div>
+
+      <div style="margin-top:var(--sp-4)">
+        <div class="kv"><span class="muted sm">They want</span><span class="sm" style="text-align:right">${esc(e.wants)}</span></div>
+        <div class="kv"><span class="muted sm">For</span><span class="sm">${esc(e.when)}</span></div>
+        <div class="kv"><span class="muted sm">Size</span><span class="sm">${esc(e.guests)}</span></div>
+        <div class="kv"><span class="muted sm">Budget</span><span class="sm">${esc(e.budget)}</span></div>
+      </div>
+    </div>
+
+    <div class="card pad">
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:var(--sp-3)">
+        Your quote</div>
+      ${e.quote
+        ? `<div class="money money-lg">${money(e.quote)}</div>
+           <div class="xs muted" style="margin-top:4px">${esc(e.lastContact)}</div>`
+        : `<div class="muted sm">No price sent yet. This is the stage where most enquiries go cold.</div>`}
+
+      <div class="stack" style="margin-top:var(--sp-5)">
+        ${e.quote
+          ? `<button class="btn btn-primary btn-block">Convert to order &amp; take deposit</button>
+             <button class="btn btn-secondary btn-block">Send follow-up on ${esc(e.channel)}</button>
+             <button class="btn btn-ghost btn-block">Mark as lost</button>`
+          : `<button class="btn btn-primary btn-block">Price it &amp; send quote</button>
+             <button class="btn btn-ghost btn-block">Mark as lost</button>`}
+      </div>
+      <div class="xs muted" style="margin-top:var(--sp-4)">
+        It only becomes an order — with a production job and a place in the calendar —
+        once the deposit is in.
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============ recipe — per-unit costing ============ */
+function viewRecipe(){
+  const r = DB.recipe, c = costRecipe(r);
+  return `
+  <div class="page-head">
+    <div><h1>Recipe</h1><div class="page-sub">${esc(r.product)} · makes ${r.yield} per batch</div></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary btn-sm">Save Recipe</button>
+  </div>
+
+  <div class="grid2" style="grid-template-columns:minmax(320px,2fr) minmax(280px,1fr)">
+    <div class="card">
+      <div class="pad" style="border-bottom:1px solid var(--line)"><strong>Ingredients</strong></div>
+      <div class="tbl-wrap">
+        <table style="border:0;border-radius:0">
+          <thead><tr><th>Ingredient</th><th class="num">Qty</th><th class="num">Unit cost</th><th class="num">Cost</th></tr></thead>
+          <tbody>${r.ingredients.map(i=>`
+            <tr><td>${esc(i.name)}</td>
+              <td class="num">${i.qty} ${esc(i.unit)}</td>
+              <td class="num">${money0(i.unitCost)}/${esc(i.unit)}</td>
+              <td class="num">${money(i.qty*i.unitCost)}</td></tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+      <div class="pad"><button class="btn btn-ghost btn-sm">+ Add ingredient</button></div>
+    </div>
+
+    <div class="card pad">
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600">Cost per batch</div>
+      <div class="kv"><span class="muted sm">Ingredients</span><span class="money">${money(c.ingredients)}</span></div>
+      <div class="kv"><span class="muted sm">Labour (${r.labourMinutes} min)</span><span class="money">${money(c.labour)}</span></div>
+      <div class="kv"><span class="muted sm">Overhead</span><span class="money">${money(c.overhead)}</span></div>
+      <div class="kv"><span class="sm" style="font-weight:600">Batch total (${r.yield} cakes)</span>
+        <span class="money">${money(c.batch)}</span></div>
+
+      <div class="xs muted" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-top:var(--sp-5)">
+        Per cake — what you actually sell</div>
+      <div class="kv"><span class="muted sm">Costs you</span><span class="money">${money(c.perUnit)}</span></div>
+      <div class="kv"><span class="muted sm">Sells for</span><span class="money">${money(c.sell)}</span></div>
+      <div class="kv"><span class="sm" style="font-weight:600">Profit per cake</span>
+        <span class="money pos">${money(c.profit)}</span></div>
+
+      <div class="grand between">
+        <span>Margin</span>
+        <span class="${c.margin>=0?'pos':'neg'}">${c.margin.toFixed(1)}%</span>
+      </div>
+      <div class="xs muted" style="margin-top:var(--sp-3)">
+        Margin compares the price of one cake against what one cake costs.
+        Comparing a unit price against a whole batch is what made this look like 14%.
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============ dashboard ============ */
+function viewHome(){
+  const outstanding = DB.orders.reduce((s,o)=>s+(o.total-o.paid),0);
+  const invoiced = DB.orders.reduce((s,o)=>s+o.total,0);
+  return `
+  <div class="page-head"><div><h1>Good morning, Ada</h1>
+    <div class="page-sub">Sat, 12 Oct 2024 · here is where the business stands</div></div></div>
+  <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr))">
+    <div class="card pad"><div class="xs muted" style="text-transform:uppercase;font-weight:600">Invoiced</div>
+      <div class="money" style="font-size:20px">${money0(invoiced)}</div>
+      <div class="xs muted">${DB.orders.length} orders</div></div>
+    <div class="card pad"><div class="xs muted" style="text-transform:uppercase;font-weight:600">Outstanding</div>
+      <div class="money neg" style="font-size:20px">${money0(outstanding)}</div>
+      <div class="xs muted">awaiting payment</div></div>
+    <div class="card pad"><div class="xs muted" style="text-transform:uppercase;font-weight:600">Open enquiries</div>
+      <div class="money" style="font-size:20px">${DB.enquiries.length}</div>
+      <div class="xs muted">${DB.enquiries.filter(e=>e.stale).length} gone quiet</div></div>
+    <div class="card pad"><div class="xs muted" style="text-transform:uppercase;font-weight:600">Due this week</div>
+      <div class="money" style="font-size:20px">4</div>
+      <div class="xs muted">1 overdue</div></div>
+  </div>`;
+}
+
+/* ============ boot ============ */
+function applyTheme(t){
+  document.documentElement.dataset.theme = t;
+  document.getElementById('themeBtn').textContent = t==='dark' ? '☀️' : '🌙';
+  try{ localStorage.setItem('erp_theme', t);}catch(e){}
+}
+document.getElementById('themeBtn').onclick = () =>
+  applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+applyTheme((()=>{try{return localStorage.getItem('erp_theme')}catch(e){return null}})() ||
+  (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeAll(); });
+window.addEventListener('hashchange', () => { closeAll(); render(); });
+if (!location.hash) location.hash = '#/home';
+render();
+</script>
+</body>
+</html>
