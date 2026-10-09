@@ -62,13 +62,38 @@ Most screens are shared. A role simply sees fewer items in the navigation.
 
 ## 3. Design constraints — read before drawing anything
 
-**Mobile first, and mean it.** The primary user is standing in a kitchen with
-flour on her hands, checking what's due tomorrow on a phone. Design at
-**360px** first, then tablet, then desktop. Desktop matters for the
-accounting and reporting screens, where tables need room.
+**One responsive web app, not two products.** Same URL, same code. It
+reshapes to the screen. Nobody chooses a device; they open it on whatever is
+in front of them.
 
-**One-handed and thumb-reachable.** Primary actions go at the bottom on
-mobile, not tucked in a top-right corner.
+**Design the phone layout first — as a method, not a verdict on what an ERP
+is.** Drawing the small screen first and expanding outward produces something
+that works at both ends. Drawing desktop first and shrinking it produces the
+cramped mobile view Sage and Odoo are both criticised for. Work at **390px**
+and **1440px**; tablet falls out of the two.
+
+**But ERP work really is desk work — some of it.** The split is by task and by
+person, not by product:
+
+| Desk work (1440px primary) | On-your-feet work (390px primary) |
+|---|---|
+| Ledger and accounting entry | What's due today — the calendar |
+| Payroll runs | Taking an order mid-conversation |
+| Reports, P&L, trial balance | Recording a payment as cash changes hands |
+| Recipe editing | Checking stock while out buying |
+| Product and stock tables | Marking a job started or finished |
+| Settings, users, permissions | Approving a draft from WhatsApp |
+
+The owner and sales staff live on a phone. The clerk and the accountant live
+on a laptop. Both open the same system.
+
+**So you don't draw everything twice.** Pick each screen's primary context
+from the table and lay that out properly; the other width follows from the
+component rules. Only the shell needs both drawn deliberately: a left sidebar
+on desktop, a bottom bar on mobile.
+
+**One-handed and thumb-reachable on phones.** Primary actions go at the bottom
+on mobile, not tucked in a top-right corner.
 
 **Assume a weak connection.** Design a visible "saving…", "saved", and
 "couldn't save — will retry" state. Do not assume instant responses.
@@ -369,17 +394,19 @@ that stay readable at small sizes in poor light.
 
 Don't draw all twenty screens. In this order:
 
-1. **Production calendar (mobile)** — the hero
-2. **Order detail (mobile)** — the richest screen
-3. **Orders list (mobile)**
-4. **Dashboard (mobile and desktop)**
-5. **Recipe editor with the live cost panel (desktop)**
-6. **Products & stock list (desktop)**
-7. The component set from section 6
-8. Everything else
+1. **Production calendar — phone** — the hero
+2. **Order detail — phone** — the richest screen
+3. **Orders list — phone**
+4. **Dashboard — both widths** — the one screen everyone opens on everything
+5. **Recipe editor with the live cost panel — desktop** — the sales demo
+6. **Products & stock table — desktop**
+7. **Ledger — desktop** — proves the accounting side has room to breathe
+8. The component set from section 6
+9. Everything else
 
-The first three tell us whether the whole thing works. If the calendar and the
-order screen feel right on a phone, the rest will follow.
+The first three tell us whether the on-your-feet half works. Items 5 to 7 tell
+us whether the desk half works. Between them they cover both kinds of user,
+which is the real test — not twenty screens at one width.
 
 ---
 
