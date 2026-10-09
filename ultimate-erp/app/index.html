@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ultimate ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{margin:0;color:var(--heading)}
+.hidden{display:none !important}
+.muted{color:var(--muted)} .sm{font-size:var(--fs-sm)} .xs{font-size:var(--fs-xs)}
+.spacer{flex:1}
+.row{display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap}
+.between{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3)}
+.stack{display:grid;gap:var(--sp-3)} .stack>*{min-width:0}
+
+/* ---------- auth ---------- */
+.auth-wrap{min-height:100vh;display:grid;place-items:center;padding:var(--sp-5);
+  background:radial-gradient(900px 500px at 15% -10%, var(--teal-100), transparent), var(--bg)}
+.auth-card{width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-xl);box-shadow:var(--shadow-lg);padding:var(--sp-6)}
+.auth-brand{display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-5)}
+.mark{width:38px;height:38px;border-radius:50%;background:var(--primary);color:#fff;
+  display:grid;place-items:center;font-weight:var(--fw-bold)}
+label{display:block;font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--muted);
+  margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.input{width:100%;min-height:var(--tap);border:1px solid var(--line);border-radius:var(--r-md);
+  background:var(--bg);padding:0 var(--sp-3);outline:none}
+textarea.input{padding:var(--sp-3);min-height:84px}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--teal-100)}
+.field{margin-bottom:var(--sp-4)}
+.msg{padding:var(--sp-3);border-radius:var(--r-md);font-size:var(--fs-sm);margin-bottom:var(--sp-4)}
+.msg-error{background:var(--overdue-bg);color:var(--overdue-fg)}
+.msg-ok{background:var(--paid-bg);color:var(--paid-fg)}
+.msg-info{background:var(--pending-bg);color:var(--pending-fg)}
+.switch-line{text-align:center;margin-top:var(--sp-4);font-size:var(--fs-sm)}
+.linkish{color:var(--positive);font-weight:var(--fw-semibold);cursor:pointer;background:none;border:0}
+
+/* ---------- shell ---------- */
+.shell{display:grid;min-height:100vh;grid-template-columns:248px 1fr;
+  grid-template-rows:auto 1fr;grid-template-areas:"side top" "side main"}
+.sidebar{grid-area:side;background:var(--sidebar);color:var(--sidebar-text);
+  padding:var(--sp-5) var(--sp-3);display:flex;flex-direction:column;gap:2px}
+.sb-brand{display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-2) var(--sp-5)}
+.sb-mark{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.14);
+  display:grid;place-items:center;color:#fff;font-weight:var(--fw-bold);flex:none}
+.sb-name{color:#fff;font-weight:var(--fw-semibold);font-size:var(--fs-sm);line-height:1.15}
+.sb-tag{font-size:10px;opacity:.65}
+.sb-item{display:flex;align-items:center;gap:var(--sp-3);padding:10px var(--sp-3);
+  border-radius:var(--r-sm);font-size:var(--fs-sm);font-weight:var(--fw-medium);cursor:pointer}
+.sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.sb-item.active{background:var(--sidebar-active-bg);color:#fff;font-weight:var(--fw-semibold)}
+.sb-ico{width:18px;text-align:center}
+.topbar{grid-area:top;background:var(--surface);border-bottom:1px solid var(--line);
+  padding:var(--sp-3) var(--sp-5);display:flex;align-items:center;gap:var(--sp-3);
+  position:sticky;top:0;z-index:20}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:0;background:transparent;
+  display:grid;place-items:center;cursor:pointer;font-size:16px;flex:none}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--green-600);color:#fff;
+  display:grid;place-items:center;font-size:12px;font-weight:var(--fw-semibold);flex:none}
+.main{grid-area:main;padding:var(--sp-6);max-width:1280px;width:100%;min-width:0}
+.page-head{display:flex;align-items:flex-end;gap:var(--sp-4);flex-wrap:wrap;margin-bottom:var(--sp-5)}
+.page-head h1{font-size:var(--fs-h1);line-height:var(--lh-h1);font-weight:var(--fw-bold);letter-spacing:-.3px}
+.page-sub{color:var(--muted);font-size:var(--fs-sm);margin-top:3px}
+.bottom-nav{display:none}
+.burger{display:none}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr;grid-template-areas:"top" "main"}
+  .sidebar{display:none}
+  .burger{display:grid}
+  .topbar{padding:var(--sp-3) var(--sp-4)}
+  .main{padding:var(--sp-4) var(--sp-4) 96px}
+  .grid2{grid-template-columns:1fr !important}
+  .who-name,.who-role{display:none}
+  .bottom-nav{display:grid;position:fixed;left:0;right:0;bottom:0;z-index:30;
+    background:var(--surface);border-top:1px solid var(--line);
+    grid-template-columns:repeat(5,1fr);align-items:center;padding:var(--sp-2) 0 var(--sp-4)}
+  .nav-item{display:grid;justify-items:center;gap:3px;color:var(--muted);
+    font-size:9.5px;font-weight:var(--fw-semibold);cursor:pointer}
+  .nav-item.active{color:var(--primary)}
+  .nav-ico{font-size:17px;line-height:1}
+  .fab{width:50px;height:50px;border-radius:50%;background:var(--primary);color:#fff;
+    display:grid;place-items:center;font-size:24px;margin-top:-20px;border:0;cursor:pointer;
+    box-shadow:0 5px 14px rgba(15,81,50,.35);justify-self:center}
+}
+
+/* ---------- pieces ---------- */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.pad{padding:var(--sp-4)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  min-height:var(--tap);padding:0 var(--sp-5);border-radius:var(--r-pill);
+  border:1px solid transparent;font-weight:var(--fw-semibold);cursor:pointer}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--primary);border-color:var(--primary)}
+.btn-ghost{background:transparent;border-color:var(--line)}
+.btn-block{width:100%} .btn-sm{min-height:36px;padding:0 var(--sp-4);font-size:var(--fs-sm)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:var(--r-pill);
+  font-size:var(--fs-xs);font-weight:var(--fw-semibold);white-space:nowrap}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip-paid{background:var(--paid-bg);color:var(--paid-fg)}
+.chip-pending{background:var(--pending-bg);color:var(--pending-fg)}
+.chip-overdue{background:var(--overdue-bg);color:var(--overdue-fg)}
+.chip-processing{background:var(--processing-bg);color:var(--processing-fg)}
+.chip-plain{background:var(--sand);color:var(--muted)}
+.money{font-variant-numeric:tabular-nums;font-weight:var(--fw-semibold);color:var(--heading)}
+.money-lg{font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-.5px}
+.neg{color:var(--negative)} .pos{color:var(--positive)}
+.grid2{display:grid;gap:var(--sp-4);grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.kv{display:flex;justify-content:space-between;gap:var(--sp-4);padding:8px 0}
+.kv+.kv{border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+th{text-align:left;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.05em;
+  color:var(--muted);font-weight:var(--fw-semibold);padding:var(--sp-3) var(--sp-4);background:var(--sand)}
+td{padding:var(--sp-3) var(--sp-4);border-top:1px solid var(--line);font-size:var(--fs-sm)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tbl-wrap{overflow-x:auto}
+.order{padding:var(--sp-4);background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-md);cursor:pointer}
+.skeleton{background:linear-gradient(90deg,var(--sand),var(--line),var(--sand));
+  background-size:200% 100%;animation:sk 1.2s linear infinite;border-radius:var(--r-md);height:72px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.empty{padding:40px 20px;text-align:center;color:var(--muted)}
+#toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(16px);opacity:0;
+  background:var(--ink-900);color:var(--cream);padding:11px 18px;border-radius:var(--r-pill);
+  font-weight:var(--fw-semibold);z-index:99;transition:.2s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{background:var(--overdue-fg);color:#fff}
+.scrim{position:fixed;inset:0;background:rgba(10,20,16,.45);z-index:40;opacity:0;
+  pointer-events:none;transition:opacity .18s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;bottom:0;left:0;width:min(84vw,310px);z-index:50;background:var(--surface);
+  transform:translateX(-100%);transition:transform .22s;display:flex;flex-direction:column;overflow-y:auto}
+.drawer.open{transform:translateX(0)}
+.drawer-head{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-5) var(--sp-4);
+  border-bottom:1px solid var(--line)}
+.drawer-item{display:flex;align-items:center;gap:var(--sp-3);padding:13px var(--sp-3);
+  border-radius:var(--r-sm);cursor:pointer;margin:0 var(--sp-3)}
+.drawer-item.active{background:var(--complete-bg);color:var(--complete-fg);font-weight:var(--fw-semibold)}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);
+  border-radius:var(--r-xl) var(--r-xl) 0 0;padding:var(--sp-3) var(--sp-4) var(--sp-6);
+  transform:translateY(110%);transition:transform .22s;box-shadow:var(--shadow-lg);max-height:88vh;overflow-y:auto}
+.sheet.open{transform:translateY(0)}
+.sheet-grip{width:40px;height:4px;border-radius:var(--r-pill);background:var(--line);margin:0 auto var(--sp-4)}
+@media (min-width:901px){ .sheet{left:auto;right:var(--sp-6);bottom:var(--sp-6);width:380px;border-radius:var(--r-lg)} }
+.sheet-action{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-3);width:100%;
+  border:1px solid var(--line);border-radius:var(--r-md);cursor:pointer;background:var(--surface);
+  text-align:left;min-height:var(--tap);margin-bottom:var(--sp-2)}
+.sa-ico{width:36px;height:36px;border-radius:var(--r-sm);display:grid;place-items:center;
+  background:var(--complete-bg);color:var(--complete-fg);flex:none}
+.stepper{display:flex;padding:var(--sp-4) 0 var(--sp-2)}
+.step{flex:1;text-align:center;position:relative;min-width:0}
+.step::before{content:"";position:absolute;top:13px;left:-50%;width:100%;height:2px;background:var(--line)}
+.step:first-child::before{display:none}
+.step.done::before,.step.now::before{background:var(--green-600)}
+.dot{width:26px;height:26px;border-radius:50%;margin:0 auto var(--sp-2);display:grid;place-items:center;
+  background:var(--sand);color:var(--muted);font-size:12px;position:relative;z-index:1;border:2px solid var(--bg)}
+.step.done .dot{background:var(--green-600);color:#fff}
+.step.now .dot{background:var(--surface);color:var(--green-600);
+  box-shadow:0 0 0 2px var(--green-600) inset,0 0 0 4px var(--teal-100)}
+.step .lbl{font-size:10px;font-weight:var(--fw-semibold);color:var(--muted)}
+.step.done .lbl,.step.now .lbl{color:var(--heading)}
+</style>
+</head>
+<body>
+
+<!-- ============ AUTH ============ -->
+<div class="auth-wrap" id="authScreen">
+  <form class="auth-card" id="authForm" autocomplete="on">
+    <div class="auth-brand"><div class="mark">◆</div>
+      <div><div style="font-weight:600;color:var(--heading)" id="authTitle">Welcome back</div>
+        <div class="xs muted" id="authSub">Sign in to your business</div></div></div>
+    <div id="authMsg"></div>
+    <div class="field hidden" id="nameField">
+      <label for="fullName">Your name</label>
+      <input class="input" id="fullName" autocomplete="name" placeholder="Ada Johnson">
+    </div>
+    <div class="field"><label for="email">Email</label>
+      <input class="input" id="email" type="email" autocomplete="email" required placeholder="you@business.com"></div>
+    <div class="field"><label for="password">Password</label>
+      <input class="input" id="password" type="password" autocomplete="current-password" required placeholder="At least 6 characters"></div>
+    <button class="btn btn-primary btn-block" type="submit" id="authBtn">Sign in</button>
+    <div class="switch-line muted">
+      <span id="switchText">New here?</span>
+      <button type="button" class="linkish" id="switchBtn">Create an account</button>
+    </div>
+  </form>
+</div>
+
+<!-- ============ ONBOARDING ============ -->
+<div class="auth-wrap hidden" id="onboardScreen">
+  <form class="auth-card" id="onboardForm">
+    <div class="auth-brand"><div class="mark">◆</div>
+      <div><div style="font-weight:600;color:var(--heading)">Set up your business</div>
+        <div class="xs muted">This takes about twenty seconds</div></div></div>
+    <div id="onboardMsg"></div>
+    <div class="field"><label for="bizName">Business name</label>
+      <input class="input" id="bizName" required placeholder="Sweet Things Bakery"></div>
+    <div class="field"><label for="bizType">What kind of business</label>
+      <select class="input" id="bizType">
+        <option value="bakery">Bakery or food production</option>
+        <option value="distribution">Distribution or wholesale</option>
+        <option value="retail">Retail or shop</option>
+        <option value="manufacturing">Manufacturing</option>
+        <option value="services">Services</option>
+        <option value="other">Something else</option>
+      </select></div>
+    <div class="field">
+      <label style="text-transform:none;font-size:var(--fs-sm);color:var(--text);font-weight:500">
+        <input type="checkbox" id="withDemo" checked style="margin-right:8px">
+        Start with sample data so the screens are not empty</label>
+    </div>
+    <button class="btn btn-primary btn-block" type="submit" id="onboardBtn">Create my business</button>
+    <div class="switch-line"><button type="button" class="linkish" id="signOutEarly">Sign out</button></div>
+  </form>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="shell hidden" id="appShell">
+  <aside class="sidebar">
+    <div class="sb-brand"><div class="sb-mark">◆</div>
+      <div><div class="sb-name" id="sbCompany">—</div><div class="sb-tag">Your Business, Simplified</div></div></div>
+    <div id="sbNav"></div>
+  </aside>
+  <header class="topbar">
+    <button class="icon-btn burger" id="burgerBtn" title="Menu">☰</button>
+    <div class="spacer"></div>
+    <span class="xs muted" id="syncState">Live</span>
+    <button class="icon-btn" id="themeBtn" title="Theme">🌙</button>
+    <div class="row" style="gap:var(--sp-2)">
+      <div class="avatar" id="userAvatar">?</div>
+      <div><div class="sm who-name" style="font-weight:600;line-height:1.1" id="userName">—</div>
+        <div class="xs muted who-role" id="userRole">—</div></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" id="signOutBtn">Sign out</button>
+  </header>
+  <main class="main" id="view"></main>
+</div>
+
+<nav class="bottom-nav" id="bottomNav"></nav>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head"><div class="mark" style="width:34px;height:34px">◆</div>
+    <div><div style="font-weight:600;color:var(--heading)" id="drawerCompany">—</div>
+      <div class="xs muted" id="drawerRole">—</div></div>
+    <button class="icon-btn" style="margin-left:auto" id="drawerClose">✕</button></div>
+  <div id="drawerNav" style="padding:var(--sp-3) 0"></div>
+</aside>
+<div class="sheet" id="sheet">
+  <div class="sheet-grip"></div>
+  <div style="font-weight:700;color:var(--heading);font-size:var(--fs-h2);margin-bottom:var(--sp-3)" id="sheetTitle">Add new</div>
+  <div id="sheetBody"></div>
+</div>
+<div id="toast"></div>
+
+<!-- vendored rather than loaded from a CDN: one less thing to fail on a weak connection -->
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
