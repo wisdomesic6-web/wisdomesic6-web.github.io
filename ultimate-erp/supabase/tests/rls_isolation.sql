@@ -94,6 +94,55 @@ end;
 $$;
 
 -- ---------------------------------------------------------------------
+-- The views must obey policies too. Before 0007 they ran as their owner
+-- and happily returned every company's rows, which is the hole this
+-- section exists to keep shut.
+-- ---------------------------------------------------------------------
+reset role;
+insert into items (id, company_id, kind, name) values
+ ('11110000-0000-0000-0000-00000000000a', 'c0000000-0000-0000-0000-00000000000a', 'raw_material', 'Ada flour'),
+ ('11110000-0000-0000-0000-00000000000b', 'c0000000-0000-0000-0000-00000000000b', 'raw_material', 'Bolu flour');
+
+insert into stock_movements (company_id, item_id, reason, qty, unit_cost) values
+ ('c0000000-0000-0000-0000-00000000000a', '11110000-0000-0000-0000-00000000000a', 'purchase', 10, 1000),
+ ('c0000000-0000-0000-0000-00000000000b', '11110000-0000-0000-0000-00000000000b', 'purchase', 99, 1000);
+
+insert into orders (id, company_id, doc_type, status) values
+ ('22220000-0000-0000-0000-00000000000a', 'c0000000-0000-0000-0000-00000000000a', 'sales_order', 'confirmed'),
+ ('22220000-0000-0000-0000-00000000000b', 'c0000000-0000-0000-0000-00000000000b', 'sales_order', 'confirmed');
+insert into order_lines (order_id, description, qty, unit_price) values
+ ('22220000-0000-0000-0000-00000000000a', 'Ada cake',  1, 5000),
+ ('22220000-0000-0000-0000-00000000000b', 'Bolu cake', 1, 90000);
+
+set local role app_user;
+set local request.jwt.claim.sub = 'aaaa0000-0000-0000-0000-00000000000a';
+
+do $$
+declare n int; v numeric;
+begin
+  select count(*) into n from stock_on_hand;
+  if n <> 1 then raise exception 'FAILED: stock_on_hand leaked % rows to Ada', n; end if;
+  select qty_on_hand into v from stock_on_hand;
+  if v <> 10 then raise exception 'FAILED: Ada sees stock qty %, expected her 10', v; end if;
+  raise notice 'ok  stock_on_hand view shows Ada only her own stock (%)', v;
+
+  select count(*) into n from order_totals;
+  if n <> 1 then raise exception 'FAILED: order_totals leaked % rows to Ada', n; end if;
+  select total into v from order_totals;
+  if v <> 5000 then raise exception 'FAILED: Ada sees order total %, expected 5000', v; end if;
+  raise notice 'ok  order_totals view shows Ada only her own order (%)', v;
+
+  select count(*) into n from order_balances;
+  if n <> 1 then raise exception 'FAILED: order_balances leaked % rows to Ada', n; end if;
+  raise notice 'ok  order_balances view is scoped to Ada';
+
+  select count(*) into n from trial_balance;
+  if n <> 0 then raise exception 'FAILED: trial_balance leaked % rows to Ada', n; end if;
+  raise notice 'ok  trial_balance view is scoped to Ada';
+end;
+$$;
+
+-- ---------------------------------------------------------------------
 -- Sign in as Bolu — the mirror image
 -- ---------------------------------------------------------------------
 set local request.jwt.claim.sub = 'bbbb0000-0000-0000-0000-00000000000b';
