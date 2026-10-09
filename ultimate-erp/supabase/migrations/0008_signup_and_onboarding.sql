@@ -94,6 +94,17 @@ set search_path = public
 as $$
 declare v_entry uuid; v_expense uuid; v_cash uuid;
 begin
+  -- SECURITY DEFINER plus a company id in the signature means this must
+  -- check membership itself; without it any signed-in user could post
+  -- into another business's books by passing its id.
+  if not app.auth_has_role(p_company,
+       array['owner','admin','manager','clerk']::company_role[]) then
+    raise exception 'You do not have access to that business';
+  end if;
+  if p_amount is null or p_amount <= 0 then
+    raise exception 'An expense must be a positive amount';
+  end if;
+
   select id into v_expense from accounts where company_id = p_company and code = p_account_code;
   select id into v_cash    from accounts where company_id = p_company and system_tag = 'cash';
   if v_expense is null or v_cash is null then
