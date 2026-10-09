@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERP Design System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);
+  font-size:var(--fs-body);line-height:var(--lh-body);-webkit-font-smoothing:antialiased}
+h1,h2,h3{color:var(--heading);margin:0}
+.page{max-width:1240px;margin:0 auto;padding:var(--sp-8) var(--sp-5) 80px}
+.page-title{font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-.4px}
+.page-sub{color:var(--muted);margin:var(--sp-2) 0 0}
+section{margin-top:var(--sp-10)}
+.sec-title{font-size:var(--fs-h2);font-weight:var(--fw-semibold);margin-bottom:var(--sp-4);
+  padding-bottom:var(--sp-2);border-bottom:1px solid var(--line)}
+.note{color:var(--muted);font-size:var(--fs-sm);margin:calc(-1 * var(--sp-2)) 0 var(--sp-4)}
+.row{display:flex;flex-wrap:wrap;gap:var(--sp-3);align-items:center}
+.grid{display:grid;gap:var(--sp-4)}
+
+/* ---------- swatches ---------- */
+.swatches{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.sw{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface)}
+.sw .chip-color{height:68px}
+.sw .meta{padding:var(--sp-3)}
+.sw .name{font-weight:var(--fw-semibold);font-size:var(--fs-sm)}
+.sw .hex{color:var(--muted);font-size:var(--fs-xs);font-variant-numeric:tabular-nums;text-transform:uppercase}
+
+/* ---------- type ---------- */
+.type-row{display:flex;gap:var(--sp-5);align-items:baseline;padding:var(--sp-3) 0;border-bottom:1px solid var(--line)}
+.type-row .label{width:160px;flex:none;color:var(--muted);font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em;font-weight:var(--fw-semibold)}
+
+/* ---------- components ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);
+  min-height:var(--tap);padding:0 var(--sp-5);border-radius:var(--r-pill);border:1px solid transparent;
+  font-size:var(--fs-body);font-weight:var(--fw-semibold);cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-secondary{background:var(--surface);color:var(--primary);border-color:var(--primary)}
+.btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.btn-danger{background:var(--overdue-bg);color:var(--overdue-fg)}
+.btn-block{width:100%}
+.btn-sm{min-height:34px;padding:0 var(--sp-4);font-size:var(--fs-sm)}
+
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:var(--r-pill);
+  font-size:var(--fs-xs);font-weight:var(--fw-semibold);white-space:nowrap}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.chip-paid{background:var(--paid-bg);color:var(--paid-fg)}
+.chip-pending{background:var(--pending-bg);color:var(--pending-fg)}
+.chip-overdue{background:var(--overdue-bg);color:var(--overdue-fg)}
+.chip-processing{background:var(--processing-bg);color:var(--processing-fg)}
+.chip-complete{background:var(--complete-bg);color:var(--complete-fg)}
+
+.money{font-variant-numeric:tabular-nums;font-feature-settings:var(--num);font-weight:var(--fw-semibold);color:var(--heading)}
+.money-lg{font-size:var(--fs-display);line-height:var(--lh-display);font-weight:var(--fw-bold);letter-spacing:-.5px}
+.money-neg{color:var(--negative)}
+.money-pos{color:var(--positive)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.card-pad{padding:var(--sp-4)}
+
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:var(--sp-4);box-shadow:var(--shadow-sm)}
+.kpi-head{display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-3)}
+.kpi-ico{width:30px;height:30px;border-radius:var(--r-sm);display:grid;place-items:center;font-size:14px}
+.kpi-label{font-size:var(--fs-xs);color:var(--muted);font-weight:var(--fw-semibold);
+  text-transform:uppercase;letter-spacing:.05em}
+.kpi-value{font-size:20px;font-weight:var(--fw-bold);color:var(--heading);
+  font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.kpi-foot{font-size:var(--fs-xs);color:var(--muted);margin-top:var(--sp-1)}
+.delta-up{color:var(--positive);font-weight:var(--fw-semibold)}
+.delta-down{color:var(--negative);font-weight:var(--fw-semibold)}
+
+/* job card — production calendar */
+.job{display:flex;gap:var(--sp-3);padding:var(--sp-3);background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-md);align-items:center;min-width:0}
+.job-time{font-size:var(--fs-xs);color:var(--muted);font-weight:var(--fw-semibold);
+  width:56px;flex:none;font-variant-numeric:tabular-nums}
+.job-thumb{width:40px;height:40px;border-radius:var(--r-sm);flex:none;
+  background:linear-gradient(135deg,#8B5E3C,#5C3A21);display:grid;place-items:center;font-size:18px}
+.job-body{flex:1;min-width:0}
+/* chip rides on the customer line so the product name keeps the full
+   width underneath — at 390px it otherwise truncates to "Chocolate ..." */
+.job-meta{display:flex;align-items:center;gap:var(--sp-2);justify-content:space-between}
+.job-meta .chip{flex:none}
+.job-cust{font-size:var(--fs-xs);color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.job-name{font-weight:var(--fw-semibold);color:var(--heading);font-size:var(--fs-sm);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.job-qty{font-size:var(--fs-xs);color:var(--muted)}
+
+/* order card */
+.order{padding:var(--sp-4);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md)}
+.order-top{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-2)}
+.order-no{font-weight:var(--fw-bold);color:var(--heading);font-size:var(--fs-sm)}
+.order-cust{color:var(--heading);font-weight:var(--fw-medium);font-size:var(--fs-sm)}
+.order-items{color:var(--muted);font-size:var(--fs-xs);margin-top:2px}
+.order-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:var(--sp-3)}
+.order-date{font-size:var(--fs-xs);color:var(--muted)}
+
+/* table */
+table{width:100%;border-collapse:collapse;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden}
+th{text-align:left;font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.05em;
+  color:var(--muted);font-weight:var(--fw-semibold);padding:var(--sp-3) var(--sp-4);
+  background:var(--sand);white-space:nowrap}
+td{padding:var(--sp-3) var(--sp-4);border-top:1px solid var(--line);font-size:var(--fs-sm)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+
+/* segmented control */
+.segmented{display:inline-flex;background:var(--sand);border-radius:var(--r-pill);padding:3px;gap:3px}
+.segmented button{border:0;background:transparent;padding:8px 22px;border-radius:var(--r-pill);
+  font:inherit;font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--muted);cursor:pointer}
+.segmented button[aria-selected="true"]{background:var(--primary);color:#fff}
+
+/* filter chips */
+.filters{display:flex;gap:var(--sp-2);overflow-x:auto;padding-bottom:2px}
+.filter{border:1px solid var(--line);background:var(--surface);color:var(--text);
+  padding:7px 14px;border-radius:var(--r-pill);font:inherit;font-size:var(--fs-sm);
+  font-weight:var(--fw-medium);white-space:nowrap;cursor:pointer}
+.filter[aria-selected="true"]{background:var(--primary);color:#fff;border-color:var(--primary)}
+
+/* ---------- phone frame ---------- */
+.frames{display:flex;gap:var(--sp-6);flex-wrap:wrap}
+.phone{width:390px;flex:none;border:10px solid #10211B;border-radius:40px;
+  background:var(--bg);overflow:hidden;box-shadow:var(--shadow-lg);position:relative}
+.phone-label{text-align:center;color:var(--muted);font-size:var(--fs-sm);margin-top:var(--sp-3);font-weight:var(--fw-medium)}
+.status-bar{display:flex;justify-content:space-between;padding:10px var(--sp-5) 2px;
+  font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--heading)}
+.app-bar{display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-3) var(--sp-4)}
+.app-bar .brand{display:flex;align-items:center;gap:var(--sp-2);flex:1;min-width:0}
+.logo-mark{width:30px;height:30px;border-radius:50%;background:var(--surface);
+  border:1.5px solid var(--primary);display:grid;place-items:center;color:var(--primary);
+  font-weight:var(--fw-bold);font-size:13px;flex:none}
+.brand-name{font-size:var(--fs-sm);font-weight:var(--fw-semibold);color:var(--heading);line-height:1.1}
+.brand-tag{font-size:9px;color:var(--muted);line-height:1.2}
+.icon-btn{width:34px;height:34px;border-radius:50%;border:0;background:transparent;
+  display:grid;place-items:center;cursor:pointer;font-size:15px;flex:none}
+.avatar{width:30px;height:30px;border-radius:50%;background:var(--green-600);color:#fff;
+  display:grid;place-items:center;font-size:12px;font-weight:var(--fw-semibold);flex:none}
+.screen{padding:0 var(--sp-4) 92px}
+.screen h1{font-size:var(--fs-h1);line-height:var(--lh-h1);font-weight:var(--fw-bold);letter-spacing:-.3px}
+/* grid children default to min-width:auto and refuse to shrink, which
+   pushes wide rows past the edge of a phone — this stops that */
+.stack{display:grid;gap:var(--sp-3)}
+.stack > *{min-width:0}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;
+  margin:var(--sp-5) 0 var(--sp-3)}
+.section-head h2{font-size:var(--fs-h2);font-weight:var(--fw-semibold)}
+.link{color:var(--positive);font-size:var(--fs-sm);font-weight:var(--fw-semibold);text-decoration:none}
+
+/* progress */
+.progress{height:7px;border-radius:var(--r-pill);background:var(--sand);overflow:hidden}
+.progress > span{display:block;height:100%;background:var(--green-600);border-radius:var(--r-pill)}
+
+/* week strip */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:var(--sp-3)}
+.day{text-align:center;padding:var(--sp-2) 0;border-radius:var(--r-md);cursor:pointer}
+.day .dow{font-size:9px;color:var(--muted);font-weight:var(--fw-semibold);text-transform:uppercase}
+.day .dnum{font-size:var(--fs-body);font-weight:var(--fw-semibold);color:var(--heading);margin-top:2px}
+.day[aria-selected="true"]{background:var(--primary)}
+.day[aria-selected="true"] .dow,.day[aria-selected="true"] .dnum{color:#fff}
+
+/* bottom nav */
+.bottom-nav{position:absolute;left:0;right:0;bottom:0;background:var(--surface);
+  border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);
+  align-items:center;padding:var(--sp-2) 0 var(--sp-4)}
+.nav-item{display:grid;justify-items:center;gap:3px;color:var(--muted);
+  font-size:9px;font-weight:var(--fw-semibold);text-decoration:none}
+.nav-item.active{color:var(--primary)}
+.nav-ico{font-size:17px;line-height:1}
+.fab{width:50px;height:50px;border-radius:50%;background:var(--primary);color:#fff;
+  display:grid;place-items:center;font-size:24px;margin-top:-20px;
+  box-shadow:0 5px 14px rgba(15,81,50,.35);border:0;cursor:pointer}
+
+/* theme switch */
+.theme-switch{position:fixed;top:14px;right:14px;z-index:50}
+</style>
+</head>
+<body>
+<button class="btn btn-ghost btn-sm theme-switch" onclick="
+  var r=document.documentElement;
+  r.dataset.theme = r.dataset.theme==='dark' ? 'light' : 'dark';
+  this.textContent = r.dataset.theme==='dark' ? 'Light' : 'Dark';
+">Dark</button>
+
+<div class="page">
+  <h1 class="page-title">ERP Design System</h1>
+  <p class="page-sub">Built from the approved mockups. Everything below is live CSS, not a picture —
+    these are the exact components the app will be assembled from.</p>
+
+  <!-- ================= COLOUR ================= -->
+  <section>
+    <div class="sec-title">Colour</div>
+    <p class="note">Brand</p>
+    <div class="grid swatches">
+      <div class="sw"><div class="chip-color" style="background:#0F5132"></div>
+        <div class="meta"><div class="name">Green 800</div><div class="hex">#0F5132</div>
+          <div class="hex" style="text-transform:none">Sidebar, primary</div></div></div>
+      <div class="sw"><div class="chip-color" style="background:#1B7F5A"></div>
+        <div class="meta"><div class="name">Green 600</div><div class="hex">#1B7F5A</div>
+          <div class="hex" style="text-transform:none">Positive figures</div></div></div>
+      <div class="sw"><div class="chip-color" style="background:#14BBA6"></div>
+        <div class="meta"><div class="name">Teal 500</div><div class="hex">#14BBA6</div>
+          <div class="hex" style="text-transform:none">Accent, chart series 2</div></div></div>
+      <div class="sw"><div class="chip-color" style="background:#F7F5EC;border-bottom:1px solid var(--line)"></div>
+        <div class="meta"><div class="name">Cream</div><div class="hex">#F7F5EC</div>
+          <div class="hex" style="text-transform:none">App background</div></div></div>
+      <div class="sw"><div class="chip-color" style="background:#E7E5D9;border-bottom:1px solid var(--line)"></div>
+        <div class="meta"><div class="name">Sand</div><div class="hex">#E7E5D9</div>
+          <div class="hex" style="text-transform:none">Muted surface — confirm?</div></div></div>
+    </div>
+
+    <p class="note" style="margin-top:var(--sp-5)">Status — the only colours allowed to carry meaning</p>
+    <div class="row">
+      <span class="chip chip-paid">Paid</span>
+      <span class="chip chip-pending">Pending</span>
+      <span class="chip chip-overdue">Overdue</span>
+      <span class="chip chip-processing">Processing</span>
+      <span class="chip chip-complete">Completed</span>
+    </div>
+  </section>
+
+  <!-- ================= TYPE ================= -->
+  <section>
+    <div class="sec-title">Typography — Inter</div>
+    <p class="note">Numbers use tabular figures everywhere, so columns of money line up.</p>
+    <div class="type-row"><span class="label">Display / 28 Bold</span>
+      <span style="font-size:28px;font-weight:700;letter-spacing:-.4px;color:var(--heading)">₦2,450,000.00</span></div>
+    <div class="type-row"><span class="label">H1 / 22 Bold</span>
+      <span style="font-size:22px;font-weight:700;color:var(--heading)">Production Calendar</span></div>
+    <div class="type-row"><span class="label">H2 / 17 Semibold</span>
+      <span style="font-size:17px;font-weight:600;color:var(--heading)">Today's Production Jobs</span></div>
+    <div class="type-row"><span class="label">Body / 15 Regular</span>
+      <span>Chocolate Cake (2kg) — 2 units for Grace's Treats</span></div>
+    <div class="type-row"><span class="label">Small / 13 Medium</span>
+      <span style="font-size:13px;font-weight:500">Sat, 12 Oct 2024</span></div>
+    <div class="type-row"><span class="label">Caption / 11 Semibold</span>
+      <span style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Outstanding balance</span></div>
+  </section>
+
+  <!-- ================= COMPONENTS ================= -->
+  <section>
+    <div class="sec-title">Buttons</div>
+    <div class="row">
+      <button class="btn btn-primary">New Production Job</button>
+      <button class="btn btn-secondary">Send Invoice</button>
+      <button class="btn btn-ghost">Cancel</button>
+      <button class="btn btn-danger">Delete</button>
+      <button class="btn btn-primary btn-sm">Add Product</button>
+    </div>
+    <p class="note" style="margin-top:var(--sp-3)">Minimum height 44px on phones — a thumb needs it.</p>
+  </section>
+
+  <section>
+    <div class="sec-title">Money</div>
+    <div class="row" style="gap:var(--sp-6)">
+      <div><div class="kpi-label">Total</div><div class="money money-lg">₦350,000.00</div></div>
+      <div><div class="kpi-label">Balance due</div><div class="money money-lg money-neg">₦150,000.00</div></div>
+      <div><div class="kpi-label">Money in</div><div class="money money-lg money-pos">₦2,450,000.00</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">KPI tiles</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(210px,1fr))">
+      <div class="kpi"><div class="kpi-head">
+          <div class="kpi-ico" style="background:var(--paid-bg);color:var(--paid-fg)">↓</div>
+          <div class="kpi-label">Money In</div></div>
+        <div class="kpi-value">₦2,450,000</div>
+        <div class="kpi-foot"><span class="delta-up">↑ 12%</span> vs last month</div></div>
+      <div class="kpi"><div class="kpi-head">
+          <div class="kpi-ico" style="background:var(--overdue-bg);color:var(--overdue-fg)">↑</div>
+          <div class="kpi-label">Money Out</div></div>
+        <div class="kpi-value">₦980,000</div>
+        <div class="kpi-foot"><span class="delta-down">↑ 8%</span> vs last month</div></div>
+      <div class="kpi"><div class="kpi-head">
+          <div class="kpi-ico" style="background:var(--pending-bg);color:var(--pending-fg)">◷</div>
+          <div class="kpi-label">Outstanding</div></div>
+        <div class="kpi-value">₦620,000</div>
+        <div class="kpi-foot">3 customers</div></div>
+      <div class="kpi"><div class="kpi-head">
+          <div class="kpi-ico" style="background:var(--processing-bg);color:var(--processing-fg)">▤</div>
+          <div class="kpi-label">Orders Due</div></div>
+        <div class="kpi-value">4 this week</div>
+        <div class="kpi-foot"><span class="delta-down">2 overdue</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">Cards</div>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+      <div class="job">
+        <div class="job-time">01:00 PM</div>
+        <div class="job-thumb">🍰</div>
+        <div class="job-body">
+          <div class="job-meta"><span class="job-cust">Faith Events</span>
+            <span class="chip chip-pending">In Progress</span></div>
+          <div class="job-name">Red Velvet Cake (2kg)</div>
+          <div class="job-qty">4 units</div>
+        </div>
+      </div>
+      <div class="order">
+        <div class="order-top">
+          <span class="order-no">#ORD-1003</span>
+          <span class="chip chip-processing">Processing</span>
+        </div>
+        <div class="order-cust">Grace Johnson</div>
+        <div class="order-items">Chocolate Cake (2kg) · 2 units</div>
+        <div class="order-foot">
+          <div><div class="order-date">Sat, 12 Oct 2024</div>
+            <div class="order-date" style="color:var(--negative);font-weight:var(--fw-semibold)">Outstanding ₦150,000.00</div></div>
+          <div class="money">₦350,000.00</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">Controls</div>
+    <div class="row" style="gap:var(--sp-5)">
+      <div class="segmented"><button aria-selected="true">Week</button><button>Month</button></div>
+      <div class="filters">
+        <button class="filter" aria-selected="true">All (12)</button>
+        <button class="filter">Pending (4)</button>
+        <button class="filter">In Production (3)</button>
+        <button class="filter">Delivered (5)</button>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-title">Table — desktop density</div>
+    <p class="note">Stock value is shown <strong>at cost</strong>, not at selling price.
+      Valuing stock at what you hope to sell it for overstates the business.</p>
+    <table>
+      <thead><tr><th>Product</th><th>Category</th><th class="num">Stock</th>
+        <th class="num">Buy price</th><th class="num">Sell price</th>
+        <th class="num">Value at cost</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Flour (50kg)</td><td>Raw Material</td><td class="num">48</td>
+          <td class="num">₦6,000</td><td class="num">₦11,500</td>
+          <td class="num">₦288,000</td><td><span class="chip chip-paid">OK</span></td></tr>
+        <tr><td>Butter (1kg)</td><td>Raw Material</td><td class="num">2</td>
+          <td class="num">₦2,900</td><td class="num">₦4,000</td>
+          <td class="num">₦5,800</td><td><span class="chip chip-pending">Low</span></td></tr>
+        <tr><td>Eggs (Tray)</td><td>Raw Material</td><td class="num">0</td>
+          <td class="num">₦3,000</td><td class="num">₦5,000</td>
+          <td class="num">₦0</td><td><span class="chip chip-overdue">Out</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ================= SCREEN ================= -->
+  <section>
+    <div class="sec-title">Production Calendar — assembled from the components above</div>
+    <div class="frames">
+      <div>
+        <div class="phone">
+          <div class="status-bar"><span>9:41</span><span>▮▮▮ ⌃ ▰</span></div>
+          <div class="app-bar">
+            <button class="icon-btn">☰</button>
+            <div class="brand">
+              <div class="logo-mark">◆</div>
+              <div><div class="brand-name">Your Logo</div><div class="brand-tag">Your Business, Simplified</div></div>
+            </div>
+            <button class="icon-btn">🔔</button>
+            <div class="avatar">A</div>
+          </div>
+          <div class="screen">
+            <h1>Production Calendar</h1>
+
+            <div class="card card-pad" style="margin-top:var(--sp-4)">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong style="color:var(--heading);font-size:var(--fs-sm)">Today, Sat 12 Oct 2024</strong>
+                <span class="link">3 of 5 jobs ›</span>
+              </div>
+              <div class="progress" style="margin:var(--sp-3) 0 var(--sp-2)"><span style="width:60%"></span></div>
+              <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted)">
+                <span>3 completed · 2 pending</span><span>Capacity 5/day</span>
+              </div>
+            </div>
+
+            <div class="segmented" style="display:grid;grid-template-columns:1fr 1fr;margin-top:var(--sp-4);width:100%">
+              <button aria-selected="true">Week</button><button>Month</button>
+            </div>
+
+            <div class="week">
+              <div class="day"><div class="dow">Mon</div><div class="dnum">7</div></div>
+              <div class="day"><div class="dow">Tue</div><div class="dnum">8</div></div>
+              <div class="day"><div class="dow">Wed</div><div class="dnum">9</div></div>
+              <div class="day"><div class="dow">Thu</div><div class="dnum">10</div></div>
+              <div class="day"><div class="dow">Fri</div><div class="dnum">11</div></div>
+              <div class="day" aria-selected="true"><div class="dow">Sat</div><div class="dnum">12</div></div>
+              <div class="day"><div class="dow">Sun</div><div class="dnum">13</div></div>
+            </div>
+
+            <div class="section-head"><h2>Today's Production Jobs</h2></div>
+            <div class="stack">
+              <div class="job"><div class="job-time">08:00 AM</div><div class="job-thumb">🍫</div>
+                <div class="job-body">
+                  <div class="job-meta"><span class="job-cust">Grace's Treats</span><span class="chip chip-paid">Completed</span></div>
+                  <div class="job-name">Chocolate Cake (2kg)</div><div class="job-qty">2 units</div></div></div>
+              <div class="job"><div class="job-time">10:30 AM</div><div class="job-thumb">🧁</div>
+                <div class="job-body">
+                  <div class="job-meta"><span class="job-cust">Tolu's Kitchen</span><span class="chip chip-paid">Completed</span></div>
+                  <div class="job-name">Vanilla Cake (3kg)</div><div class="job-qty">3 units</div></div></div>
+              <div class="job"><div class="job-time">01:00 PM</div><div class="job-thumb">🍰</div>
+                <div class="job-body">
+                  <div class="job-meta"><span class="job-cust">Faith Events</span><span class="chip chip-pending">In Progress</span></div>
+                  <div class="job-name">Red Velvet Cake (2kg)</div><div class="job-qty">4 units</div></div></div>
+              <div class="job"><div class="job-time">04:00 PM</div><div class="job-thumb">🎂</div>
+                <div class="job-body">
+                  <div class="job-meta"><span class="job-cust">Mariam Stores</span><span class="chip chip-overdue">Overdue</span></div>
+                  <div class="job-name">Cupcakes (dozen)</div><div class="job-qty">5 units</div></div></div>
+            </div>
+
+            <button class="btn btn-primary btn-block" style="margin-top:var(--sp-5)">
+              ⊕ New Production Job</button>
+          </div>
+          <nav class="bottom-nav">
+            <a class="nav-item active"><span class="nav-ico">▦</span>Calendar</a>
+            <a class="nav-item"><span class="nav-ico">❐</span>Orders</a>
+            <button class="fab">+</button>
+            <a class="nav-item"><span class="nav-ico">☺</span>Customers</a>
+            <a class="nav-item"><span class="nav-ico">⋯</span>More</a>
+          </nav>
+        </div>
+        <div class="phone-label">Production Calendar · 390px</div>
+      </div>
+    </div>
+  </section>
+</div>
+</body>
+</html>

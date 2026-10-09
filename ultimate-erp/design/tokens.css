@@ -1,0 +1,93 @@
+/* =====================================================================
+   Design tokens — taken from the approved mockups.
+   Every colour, size and radius in the app comes from here, so both
+   themes and any later rebrand are a change in one file.
+   ===================================================================== */
+
+:root {
+  /* ---- brand ---- */
+  --green-900: #0A3B24;   /* darkest, for pressed states */
+  --green-800: #0F5132;   /* sidebar, primary buttons, active nav */
+  --green-600: #1B7F5A;   /* secondary green, positive figures */
+  --teal-500:  #14BBA6;   /* accent, second chart series */
+  --teal-100:  #D8F3EE;   /* accent wash */
+
+  /* ---- neutrals ---- */
+  --cream:     #F7F5EC;   /* app background */
+  --sand:      #E7E5D9;   /* muted surface, dividers on cream */
+  --white:     #FFFFFF;
+  --ink-900:   #11211A;   /* headings */
+  --ink-700:   #2F3E37;   /* body */
+  --ink-500:   #6B7B73;   /* secondary text */
+  --ink-300:   #A8B5AE;   /* placeholder, disabled */
+  --line:      #E4E8E5;   /* borders */
+
+  /* ---- status ----
+     Each has a text colour and the wash it sits on. */
+  --paid-fg:       #15803D;  --paid-bg:       #DCFCE7;
+  --pending-fg:    #B45309;  --pending-bg:    #FEF3C7;
+  --overdue-fg:    #DC2626;  --overdue-bg:    #FEE2E2;
+  --processing-fg: #1D4ED8;  --processing-bg: #DBEAFE;
+  --complete-fg:   #0F5132;  --complete-bg:   #D6EADF;
+
+  /* semantic aliases, so screens never name a raw colour */
+  --bg:        var(--cream);
+  --surface:   var(--white);
+  --text:      var(--ink-700);
+  --heading:   var(--ink-900);
+  --muted:     var(--ink-500);
+  --primary:   var(--green-800);
+  --positive:  var(--green-600);
+  --negative:  var(--overdue-fg);
+  --sidebar:   var(--green-800);
+  --sidebar-text: #C9DED4;
+  --sidebar-active-bg: #1B7F5A;
+
+  /* ---- type ---- */
+  --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --fs-display: 28px;  --lh-display: 34px;
+  --fs-h1:      22px;  --lh-h1:      28px;
+  --fs-h2:      17px;  --lh-h2:      24px;
+  --fs-body:    15px;  --lh-body:    22px;
+  --fs-sm:      13px;  --lh-sm:      18px;
+  --fs-xs:      11px;  --lh-xs:      15px;
+  --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+
+  /* money and anything in a table column uses tabular figures so digits
+     line up vertically — without this, totals look ragged */
+  --num: "tnum" 1, "lnum" 1;
+
+  /* ---- shape and depth ---- */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --shadow-sm: 0 1px 2px rgba(17, 33, 26, .06);
+  --shadow-md: 0 2px 8px rgba(17, 33, 26, .07), 0 1px 2px rgba(17, 33, 26, .04);
+  --shadow-lg: 0 8px 28px rgba(17, 33, 26, .10);
+
+  /* touch targets never go below this on phones */
+  --tap: 44px;
+}
+
+[data-theme="dark"] {
+  --cream:   #0E1613;
+  --sand:    #1A2420;
+  --white:   #141E1A;
+  --ink-900: #EAF2EE;
+  --ink-700: #D2DED8;
+  --ink-500: #8FA299;
+  --ink-300: #5F726A;
+  --line:    #253330;
+
+  --paid-fg:       #4ADE80;  --paid-bg:       #10301F;
+  --pending-fg:    #FBBF24;  --pending-bg:    #33280C;
+  --overdue-fg:    #F87171;  --overdue-bg:    #3A1A1A;
+  --processing-fg: #60A5FA;  --processing-bg: #152743;
+  --complete-fg:   #6EE7B7;  --complete-bg:   #10301F;
+
+  --bg:      var(--cream);
+  --surface: var(--white);
+  --primary: var(--green-600);
+  --sidebar: #0A1512;
+  --sidebar-text: #A9BFB6;
+}
